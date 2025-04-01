@@ -111,7 +111,7 @@ if st.session_state.authenticated:
     if top_n_2 and not top_n:
         FT_Table = FT_Table.nlargest(top_n_2, "Gross Liability")
 
-    if top_n_2 and top_n_2:
+    if top_n and top_n_2:
         FT_Table_1 = FT_Table.nlargest(top_n, "Amount Paid")
         FT_Table_2 = FT_Table.nlargest(top_n_2, "Gross Liability")
         FT_Table = pd.concat([FT_Table_1, FT_Table_2])
