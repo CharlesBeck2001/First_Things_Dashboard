@@ -100,10 +100,23 @@ if st.session_state.authenticated:
     st.title("First Things Customer Data")
     # Input box for user to specify N (default is empty)
     top_n = st.number_input("Show Top N Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=len(FT_Table), value=None, step=1, format="%d")
+
+    # Input box for user to specify N (default is empty)
+    top_n_2 = st.number_input("Show Top N Customers In Terms of Total Liability (leave blank for all)", min_value=1, max_value=len(FT_Table), value=None, step=1, format="%d")
     
     # Filter only if the user provides an N value
-    if top_n:
+    if top_n and not top_n_2:
         FT_Table = FT_Table.nlargest(top_n, "Amount Paid")
-    
+
+    if top_n_2 and not top_n:
+        FT_Table = FT_Table.nlargest(top_n_2, "Gross Liability")
+
+    if top_n_2 and top_2:
+        FT_Table_1 = FT_Table.nlargest(top_n, "Amount Paid")
+        FT_Table_2 = FT_Table.nlargest(top_n_2, "Gross Liability")
+        FT_Table = pd.concat([FT_Table_1, FT_Table_2])
+        FT_Table = FT_Table.drop_duplicates()
+        FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
+
     # Display the filtered table
     st.dataframe(FT_Table, use_container_width=True)
