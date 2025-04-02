@@ -20,7 +20,7 @@ if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 # Check if the user is already authenticated through cookies
-if cookies.get("authenticated"):
+if cookies.is_ready() and cookies.get("authenticated") == "true":
     st.session_state.authenticated = True
 
 # Login form
