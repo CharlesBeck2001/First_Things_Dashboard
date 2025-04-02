@@ -449,17 +449,79 @@ if st.session_state.authenticated:
     
     # Initialize filtered dataframe as None
     filtered_df = None
+    filtered_df_2 = None
 
     # Perform the search only if both first name or last name are provided
     if first_name_filter or last_name_filter:
         # Apply filters to the entire database (FT_Table)
-        filtered_df = FT_Table_OG
+        #filtered_df = FT_Table_OG
+
         
-        if first_name_filter:
-            filtered_df = filtered_df[filtered_df["First Name"].str.contains(first_name_filter, case=False, na=False)]
-        
-        if last_name_filter:
-            filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
+        if first_name_filter and last_name_filter:
+            #filtered_df = filtered_df[filtered_df["First Name"].str.contains(first_name_filter, case=False, na=False)]
+
+            name_query = f"""
+            SELECT 
+                c.First_Name,
+                c.Last_Name,
+                c.primary_address,
+                SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+                SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+            FROM 
+                ft_customers c
+            JOIN 
+                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+            WHERE
+                c.First_Name = '{first_name_filter}' AND c.Last_Name = '{last_name_filter}'
+            GROUP BY 
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+            """
+
+            filtered_df = execute_sql(name_query)
+
+        elif first_name_filter:
+
+            name_query = f"""
+            SELECT 
+                c.First_Name,
+                c.Last_Name,
+                c.primary_address,
+                SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+                SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+            FROM 
+                ft_customers c
+            JOIN 
+                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+            WHERE
+                c.First_Name = '{first_name_filter}'
+            GROUP BY 
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+            """
+
+            filtered_df = execute_sql(name_query)
+
+        elif last_name_filter:
+
+            name_query = f"""
+            SELECT 
+                c.First_Name,
+                c.Last_Name,
+                c.primary_address,
+                SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+                SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+            FROM 
+                ft_customers c
+            JOIN 
+                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+            WHERE
+                c.Last_Name = '{last_name_filter}'
+            GROUP BY 
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+            """
+
+            filtered_df = execute_sql(name_query)
+        #if last_name_filter:
+        #   filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
         
         # Display the distinct filtered dataframe if results are found
         if filtered_df.empty:
@@ -473,11 +535,29 @@ if st.session_state.authenticated:
 
     if adress_filter:
         # Apply filters to the entire database (FT_Table)
-        filtered_df_2 = FT_Table_OG
+        #filtered_df_2 = FT_Table_OG
         
         if adress_filter:
-            filtered_df_2 = filtered_df_2[filtered_df_2["Primary Address"].str.contains(adress_filter, case=False, na=False)]
-        
+            #filtered_df_2 = filtered_df_2[filtered_df_2["Primary Address"].str.contains(adress_filter, case=False, na=False)]
+
+            address_query = f"""
+            SELECT 
+                c.First_Name,
+                c.Last_Name,
+                c.primary_address,
+                SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+                SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+            FROM 
+                ft_customers c
+            JOIN 
+                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+            WHERE
+                c.primary_address = '{adress_filter}'
+            GROUP BY 
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+            """
+
+            filtered_df = execute_sql(address_query)
         # Display the distinct filtered dataframe if results are found
         if filtered_df_2.empty:
             st.write("No results found for the given search criteria.")
