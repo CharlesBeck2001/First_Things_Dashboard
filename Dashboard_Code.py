@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-from streamlit_cookies_manager import Cookies
+from streamlit_cookies_manager import cookies
 
 # Initialize cookies manager
 cookies = Cookies()
