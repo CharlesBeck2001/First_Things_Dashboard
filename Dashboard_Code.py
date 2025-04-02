@@ -139,8 +139,8 @@ if st.session_state.authenticated:
             st.markdown(
                 f"""
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
-                    <h3>Total Customers</h3>
-                    <h4>{total_customers}</h4>
+                    <h3 style="font-size: 14px;">Total Customers</h3>
+                    <h4 style="font-size: 24px;">{total_customers}</h4>
                 </div>
                 """, unsafe_allow_html=True)
     
@@ -149,8 +149,8 @@ if st.session_state.authenticated:
             st.markdown(
                 f"""
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
-                    <h3>Total Amount Paid</h3>
-                    <h4>${total_amount_paid:,.2f}</h4>
+                    <h3 style="font-size: 14px;">Total Amount Paid</h3>
+                    <h4 style="font-size: 24px;">${total_amount_paid:,.2f}</h4>
                 </div>
                 """, unsafe_allow_html=True)
     
@@ -159,8 +159,8 @@ if st.session_state.authenticated:
             st.markdown(
                 f"""
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
-                    <h3>Total Gross Liability</h3>
-                    <h4>${total_gross_liability:,.2f}</h4>
+                    <h3 style="font-size: 14px;">Total Gross Liability</h3>
+                    <h4 style="font-size: 24px;">${total_gross_liability:,.2f}</h4>
                 </div>
                 """, unsafe_allow_html=True)
 
