@@ -50,7 +50,6 @@ if not st.session_state.authenticated:
             cookies["authenticated"] = "true"  # Set cookie to indicate logged-in state
             cookies.save()  # Save the cookie
             
-            st.write("Current cookies:", cookies)
             st.success("Login successful!")
             st.rerun()
         else:
