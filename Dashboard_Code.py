@@ -134,13 +134,35 @@ if st.session_state.authenticated:
     
     # Add stat boxes in columns
     with col1:
-        st.metric(label = "Total Customers", value = total_customers)
+        # Use a container to wrap the metric with custom CSS for box styling
+        with st.container():
+            st.markdown(
+                f"""
+                <div style="border: 2px solid #007bff; padding: 20px; border-radius: 10px; background-color: #f0f8ff;">
+                    <h3>Total Customers</h3>
+                    <h4>{total_customers}</h4>
+                </div>
+                """, unsafe_allow_html=True)
     
     with col2:
-        st.metric(label = "Total Amount Paid", value = f"${total_amount_paid:,.2f}")
+        with st.container():
+            st.markdown(
+                f"""
+                <div style="border: 2px solid #28a745; padding: 20px; border-radius: 10px; background-color: #e6ffe6;">
+                    <h3>Total Amount Paid</h3>
+                    <h4>${total_amount_paid:,.2f}</h4>
+                </div>
+                """, unsafe_allow_html=True)
     
     with col3:
-        st.metric(label = "Total Gross Liability", value = f"${total_gross_liability:,.2f}")
+        with st.container():
+            st.markdown(
+                f"""
+                <div style="border: 2px solid #dc3545; padding: 20px; border-radius: 10px; background-color: #f8d7da;">
+                    <h3>Total Gross Liability</h3>
+                    <h4>${total_gross_liability:,.2f}</h4>
+                </div>
+                """, unsafe_allow_html=True)
 
     
     # Input box for user to specify N (default is empty)
