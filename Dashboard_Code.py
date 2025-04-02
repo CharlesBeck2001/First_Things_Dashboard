@@ -1,10 +1,22 @@
 import streamlit as st
 import pandas as pd
 import requests
-import streamlit_cookies_manager as cookies_manager
+from streamlit_cookies_manager import EncryptedCookieManager
 
 # Initialize the cookie manager
-cookies = cookies_manager.CookieManager()
+# This should be on top of your script
+cookies = EncryptedCookieManager(
+    # This prefix will get added to all your cookie names.
+    # This way you can run your app on Streamlit Cloud without cookie name clashes with other apps.
+    prefix="ktosiek/streamlit-cookies-manager/",
+    # You should really setup a long COOKIES_PASSWORD secret if you're running on Streamlit Cloud.
+    password=os.environ.get("COOKIES_PASSWORD", "My secret password"),
+)
+if not cookies.ready():
+    # Wait for the component to load and send us current cookies.
+    st.stop()
+
+st.write("Current cookies:", cookies)
 # Accessing usernames and passwords from the secrets file
 USER_CREDENTIALS = {
     st.secrets["credentials"]["user_name_1"]: st.secrets["credentials"]["password_1"],
@@ -19,9 +31,6 @@ def authenticate(username, password):
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-# Check if the user is already authenticated through cookies
-if cookies["authenticated"] == "true":
-    st.session_state.authenticated = True
 
 # Login form
 if not st.session_state.authenticated:
@@ -34,8 +43,8 @@ if not st.session_state.authenticated:
     if login_button:
         if authenticate(username, password):
             st.session_state.authenticated = True
-            cookies["authenticated"] = "true"  # Set cookie to indicate logged-in state
-            cookies.save()  # Save the cookie
+            #cookies["authenticated"] = "true"  # Set cookie to indicate logged-in state
+            #cookies.save()  # Save the cookie
             st.success("Login successful!")
             st.rerun()
         else:
