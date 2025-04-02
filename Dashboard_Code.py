@@ -100,7 +100,7 @@ if st.session_state.authenticated:
     st.title("First Things Customer Data")
     # Input box for user to specify N (default is empty)
 
-    st.write("Filter Data By Total Amount and Gross Liability")
+    st.subheader("Filter Data By Total Amount and Gross Liability")
     top_n = st.number_input("Show Top N Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=len(FT_Table), value=None, step=1, format="%d")
 
     # Input box for user to specify N (default is empty)
@@ -120,10 +120,10 @@ if st.session_state.authenticated:
         FT_Table = FT_Table.drop_duplicates()
         FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
 
-    st.write("Overall Table Based On Your Limiting Criteria")
+    st.subheader("Overall Table Based On Your Limiting Criteria")
     st.dataframe(FT_Table, use_container_width=True)
 
-    st.write("Search By Name")
+    st.subheader("Search By Name")
     # --- Customer Search Filtering ---
     first_name_filter = st.text_input("Filter by First Name", "")
     last_name_filter = st.text_input("Filter by Last Name", "")
@@ -146,10 +146,10 @@ if st.session_state.authenticated:
         if filtered_df.empty:
             st.write("No results found for the given search criteria.")
         else:
-            st.write("Filtered Customer Data Based on Your Search")
+            st.subheader("Filtered Customer Data Based on Your Search")
             st.dataframe(filtered_df, use_container_width=True)
 
-    st.write("Search By Address")
+    st.subheader("Search By Address")
     adress_filter = st.text_input("Filter by Address", "")
 
     if adress_filter:
