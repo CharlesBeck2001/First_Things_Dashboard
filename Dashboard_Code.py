@@ -196,11 +196,11 @@ if st.session_state.authenticated:
     # Display the filtered table
     #st.dataframe(FT_Table, use_container_width=True)
 # Add a Logout button at the bottom of the page
-    logout_button = st.button("Logout")
-    if logout_button:
+    #logout_button = st.button("Logout")
+    #if logout_button:
         # Clear authentication and delete the cookie
-        st.session_state.authenticated = False
-        cookies["authenticated"] = "false"  # Change the cookie
-        cookies.save()  # Save the cookie changes
-        st.success("You have logged out.")
-        st.rerun()  # Refresh the page to apply the logout
+     #   st.session_state.authenticated = False
+     #   cookies["authenticated"] = "false"  # Change the cookie
+     #   cookies.save()  # Save the cookie changes
+     #   st.success("You have logged out.")
+     #   st.rerun()  # Refresh the page to apply the logout
