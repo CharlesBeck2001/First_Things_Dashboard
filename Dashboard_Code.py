@@ -95,7 +95,7 @@ if st.session_state.authenticated:
     
     FT_Table.index = FT_Table.index + 1
     
-    
+    FT_Table_OG = FT_Table
     # Your app's main content here
     st.title("First Things Customer Data")
     # Input box for user to specify N (default is empty)
@@ -118,5 +118,36 @@ if st.session_state.authenticated:
         FT_Table = FT_Table.drop_duplicates()
         FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
 
-    # Display the filtered table
+    st.subheader("Overall Table Based On Your Limiting Criteria")
     st.dataframe(FT_Table, use_container_width=True)
+    
+    # --- Customer Search Filtering ---
+    first_name_filter = st.text_input("Filter by First Name", "")
+    last_name_filter = st.text_input("Filter by Last Name", "")
+    
+    # Initialize filtered dataframe as None
+    filtered_df = None
+
+    # Perform the search only if both first name or last name are provided
+    if first_name_filter or last_name_filter:
+        # Apply filters to the entire database (FT_Table)
+        filtered_df = FT_Table_OG
+        
+        if first_name_filter:
+            filtered_df = filtered_df[filtered_df["First Name"].str.contains(first_name_filter, case=False, na=False)]
+        
+        if last_name_filter:
+            filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
+        
+        # Display the distinct filtered dataframe if results are found
+        if filtered_df.empty:
+            st.write("No results found for the given search criteria.")
+        else:
+            st.subheader("Filtered Customer Data Based on Your Search")
+            st.dataframe(filtered_df, use_container_width=True)
+    
+    # Display the top N table if no search is applied, or show the full database
+    #if not filtered_df:
+    
+    # Display the filtered table
+    #st.dataframe(FT_Table, use_container_width=True)
