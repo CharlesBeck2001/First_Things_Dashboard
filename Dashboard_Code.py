@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
-from streamlit_cookies_manager import EncryptedCookieManager
+import streamlit_cookies_manager as cookies_manager
 
 # Initialize the cookie manager
 cookies = cookies_manager.CookieManager()
