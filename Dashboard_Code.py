@@ -557,9 +557,9 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
             """
 
-            filtered_df = execute_sql(address_query)
+            filtered_df_2 = execute_sql(address_query)
         # Display the distinct filtered dataframe if results are found
-        if filtered_df_2.empty:
+        if filtered_df_2 is None:
             st.write("No results found for the given search criteria.")
         else:
             st.subheader("Filtered Customer Data Based on Your Search")
