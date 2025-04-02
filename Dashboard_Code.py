@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
 import requests
-from streamlit_cookies_manager import get_cookie_manager
+import streamlit_cookies_manager as cookies_manager
 
 # Initialize the cookie manager
-cookie_manager = get_cookie_manager()
-
+cookies = cookies_manager.CookieManager()
 # Accessing usernames and passwords from the secrets file
 USER_CREDENTIALS = {
     st.secrets["credentials"]["user_name_1"]: st.secrets["credentials"]["password_1"],
@@ -21,7 +20,7 @@ if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 # Check if the user is already authenticated through cookies
-if cookie_manager.get("authenticated") == "true":
+if cookies.get("authenticated"):
     st.session_state.authenticated = True
 
 # Login form
@@ -35,8 +34,8 @@ if not st.session_state.authenticated:
     if login_button:
         if authenticate(username, password):
             st.session_state.authenticated = True
-            cookie_manager.set("authenticated", "true")  # Set cookie to indicate logged-in state
-            cookie_manager.save()  # Save the cookie
+            cookies.set("authenticated", "true")  # Set cookie to indicate logged-in state
+            cookies.save()  # Save the cookie
             st.success("Login successful!")
             st.rerun()
         else:
