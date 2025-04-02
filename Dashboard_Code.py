@@ -145,6 +145,23 @@ if st.session_state.authenticated:
         else:
             st.subheader("Filtered Customer Data Based on Your Search")
             st.dataframe(filtered_df, use_container_width=True)
+
+    adress_filter = st.text_input("Filter by Address", "")
+
+    if adress_filter:
+        # Apply filters to the entire database (FT_Table)
+        filtered_df_2 = FT_Table_OG
+        
+        if adress_filter:
+            filtered_df_2 = filtered_df_2[filtered_df_2["Primary Address"].str.contains(adress_filter, case=False, na=False)]
+        
+        # Display the distinct filtered dataframe if results are found
+        if filtered_df_2.empty:
+            st.write("No results found for the given search criteria.")
+        else:
+            st.subheader("Filtered Customer Data Based on Your Search")
+            st.dataframe(filtered_df_2, use_container_width=True)
+
     
     # Display the top N table if no search is applied, or show the full database
     #if not filtered_df:
