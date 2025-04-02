@@ -32,6 +32,8 @@ def authenticate(username, password):
 # Initialize session state for authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
+
+if "authenticated" not in cookies:
     cookies["authenticated"] = "false"
 
 if cookies.get("authenticated") == "true":
