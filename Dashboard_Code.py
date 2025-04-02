@@ -191,18 +191,21 @@ if st.session_state.authenticated:
             st.subheader("Filtered Customer Data Based on Your Search")
             st.dataframe(filtered_df_2, use_container_width=True)
 
-    
+
+    logout_button = st.button("Logout")
+    if logout_button:
+        # Clear authentication and delete the cookie
+        st.session_state.authenticated = False
+        cookies["authenticated"] = "false"  # Change the cookie
+        cookies.save()  # Save the cookie changes
+        st.success("You have logged out.")
+        st.rerun()  # Refresh the page to apply the logout
+
+
+            
     # Display the top N table if no search is applied, or show the full database
     #if not filtered_df:
     
     # Display the filtered table
     #st.dataframe(FT_Table, use_container_width=True)
 # Add a Logout button at the bottom of the page
-    #logout_button = st.button("Logout")
-    #if logout_button:
-        # Clear authentication and delete the cookie
-     #   st.session_state.authenticated = False
-     #   cookies["authenticated"] = "false"  # Change the cookie
-     #   cookies.save()  # Save the cookie changes
-     #   st.success("You have logged out.")
-     #   st.rerun()  # Refresh the page to apply the logout
