@@ -134,13 +134,13 @@ if st.session_state.authenticated:
     
     # Add stat boxes in columns
     with col1:
-        st.metric("Total Customers", total_customers)
+        st.metric(label = "Total Customers", value = total_customers)
     
     with col2:
-        st.metric("Total Amount Paid", f"${total_amount_paid:,.2f}")
+        st.metric(label = "Total Amount Paid", value = f"${total_amount_paid:,.2f}")
     
     with col3:
-        st.metric("Total Gross Liability", f"${total_gross_liability:,.2f}")
+        st.metric(label = "Total Gross Liability", value = f"${total_gross_liability:,.2f}")
 
     
     # Input box for user to specify N (default is empty)
