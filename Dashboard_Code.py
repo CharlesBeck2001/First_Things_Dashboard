@@ -204,4 +204,4 @@ if st.session_state.authenticated:
         cookies["authenticated"] = "false"  # Change the cookie
         cookies.save()  # Save the cookie changes
         st.success("You have logged out.")
-        st.st.rerun()  # Refresh the page to apply the logout
+        st.rerun()  # Refresh the page to apply the logout
