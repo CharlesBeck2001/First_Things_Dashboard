@@ -11,7 +11,7 @@ cookies = EncryptedCookieManager(
     # This way you can run your app on Streamlit Cloud without cookie name clashes with other apps.
     prefix="ktosiek/streamlit-cookies-manager/",
     # You should really setup a long COOKIES_PASSWORD secret if you're running on Streamlit Cloud.
-    password=os.environ.get("COOKIES_PASSWORD", "My secret password"),
+    password=os.environ.get("COOKIES_PASSWORD", st.secrets["credentials"]["cookies_password"]),
 )
 if not cookies.ready():
     # Wait for the component to load and send us current cookies.
