@@ -88,39 +88,120 @@ if st.session_state.authenticated:
             return(df)
         else:
             print("Error executing query:", response.status_code, response.json())
+
+
+    def execute_sql_count(query):
+         headers = {
+             "apikey": supabase_key,
+             "Authorization": f"Bearer {supabase_key}",
+             "Content-Type": "application/json",
+             "Range": "0-99999"  # Request more rows explicitly
+         }
+         # Endpoint for the RPC function
+         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_count"
+             
+         # Payload with the SQL query
+         payload = {"query": query}
+             
+         # Make the POST request to the RPC function
+         response = requests.post(rpc_endpoint, headers=headers, json=payload)
+             
+         # Handle response
+         if response.status_code == 200:
+             data = response.json()
+                 
+             df = pd.DataFrame(data)
+                 
+             print("Query executed successfully, returning DataFrame.")
+             return(df)
+         else:
+             print("Error executing query:", response.status_code, response.json())
+
+
+    def execute_sql_count(query):
+         headers = {
+             "apikey": supabase_key,
+             "Authorization": f"Bearer {supabase_key}",
+             "Content-Type": "application/json",
+             "Range": "0-99999"  # Request more rows explicitly
+         }
+         # Endpoint for the RPC function
+         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_count"
+             
+         # Payload with the SQL query
+         payload = {"query": query}
+             
+         # Make the POST request to the RPC function
+         response = requests.post(rpc_endpoint, headers=headers, json=payload)
+             
+         # Handle response
+         if response.status_code == 200:
+             data = response.json()
+                 
+             df = pd.DataFrame(data)
+                 
+             print("Query executed successfully, returning DataFrame.")
+             return(df)
+         else:
+             print("Error executing query:", response.status_code, response.json())
+
+    def execute_sql_amount(query):
+         headers = {
+             "apikey": supabase_key,
+             "Authorization": f"Bearer {supabase_key}",
+             "Content-Type": "application/json",
+             "Range": "0-99999"  # Request more rows explicitly
+         }
+         # Endpoint for the RPC function
+         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_amount"
+             
+         # Payload with the SQL query
+         payload = {"query": query}
+             
+         # Make the POST request to the RPC function
+         response = requests.post(rpc_endpoint, headers=headers, json=payload)
+             
+         # Handle response
+         if response.status_code == 200:
+             data = response.json()
+                 
+             df = pd.DataFrame(data)
+                 
+             print("Query executed successfully, returning DataFrame.")
+             return(df)
+         else:
+             print("Error executing query:", response.status_code, response.json())
     
-    
-    # Define the SQL query to run
-    sql_query = """
+
+    count_query = """
     SELECT 
-        c.First_Name,
-        c.Last_Name,
-        c.primary_address,
-        SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+        COUNT(*)
+    FROM 
+        ft_customers c
+    """
+
+    amount_query = """
+    SELECT 
+        SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid
+    FROM 
+        ft_customers c
+    JOIN 
+        ft_subscriber_transactions t
+        ON c.customer_number = t.customer_number
+    """
+
+    liability_query = """
+    SELECT 
         SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
     FROM 
         ft_customers c
     JOIN 
         ft_subscriber_transactions t
         ON c.customer_number = t.customer_number
-    GROUP BY 
-        c.customer_number, c.First_Name, c.Last_Name, c.primary_address
-    LIMIT 100000
     """
     
-    FT_Table = execute_sql(sql_query)
+    # Define the SQL query to run
     
-    FT_Table.rename(columns={
-                "first_name": "First Name",
-                "last_name": "Last Name",
-                "primary_address": "Primary Address",
-                "amount_paid": "Amount Paid",
-                "gross_liability": "Gross Liability"
-            }, inplace=True)
-    
-    FT_Table.index = FT_Table.index + 1
-    
-    FT_Table_OG = FT_Table
     # Your app's main content here
     st.title("First Things Customer Data")
 
@@ -128,9 +209,9 @@ if st.session_state.authenticated:
     col1, col2, col3 = st.columns(3)
     
     # Calculate the totals
-    total_customers = len(FT_Table)
-    total_amount_paid = FT_Table["Amount Paid"].sum()
-    total_gross_liability = FT_Table["Gross Liability"].sum()
+    total_customers = int(execute_sql_count(count_query)['count'][0])
+    total_amount_paid = float(execute_sql_amount(amount_query)['amount'][0])
+    total_gross_liability = float(execute_sql_amount(liability_query)['gross_liability'][0])
     
     # Add stat boxes in columns
     with col1:
@@ -170,24 +251,193 @@ if st.session_state.authenticated:
     
     # Input box for user to specify N (default is empty)
     st.subheader("Filter Data By Total Amount and Gross Liability")
-    top_n = st.number_input("Show Top N Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=len(FT_Table), value=None, step=1, format="%d")
+    top_n = st.number_input("Show Top N Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=1000, value=None, step=1, format="%d")
 
     # Input box for user to specify N (default is empty)
-    top_n_2 = st.number_input("Show Top N Customers In Terms of Total Liability (leave blank for all)", min_value=1, max_value=len(FT_Table), value=None, step=1, format="%d")
+    top_n_2 = st.number_input("Show Top N Customers In Terms of Total Liability (leave blank for all)", min_value=1, max_value=1000, value=None, step=1, format="%d")
+
+    if not top_n and not top_n_2:
+
+        sql_query = f"""
+        SELECT 
+            c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        LIMIT 1000;
+        """
+
+        FT_Table = execute_sql(sql_query)
+        
+        FT_Table.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+        
+        FT_Table.index = FT_Table.index + 1
+        
+        FT_Table_OG = FT_Table
     
     # Filter only if the user provides an N value
     if top_n and not top_n_2:
-        FT_Table = FT_Table.nlargest(top_n, "Amount Paid")
+        
+        sql_query = f"""
+        SELECT 
+            c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            amount_paid DESC
+        LIMIT {top_n};
+        """
+        
+        FT_Table = execute_sql(sql_query)
+        
+        FT_Table.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+        
+        FT_Table.index = FT_Table.index + 1
+        
+        FT_Table_OG = FT_Table
+        
+        #FT_Table = FT_Table.nlargest(top_n, "Amount Paid")
 
     if top_n_2 and not top_n:
-        FT_Table = FT_Table.nlargest(top_n_2, "Gross Liability")
+        
+        sql_query_2 = f"""
+        SELECT 
+            c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            gross_liability DESC
+        LIMIT {top_n_2};
+        """
+        
+        FT_Table_2 = execute_sql(sql_query_2)
+        
+        FT_Table_2.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+        
+        FT_Table_2.index = FT_Table_2.index + 1
+        
+        FT_Table_OG = FT_Table_2
+        
+        #FT_Table = FT_Table.nlargest(top_n_2, "Gross Liability")
 
     if top_n and top_n_2:
-        FT_Table_1 = FT_Table.nlargest(top_n, "Amount Paid")
-        FT_Table_2 = FT_Table.nlargest(top_n_2, "Gross Liability")
+
+        sql_query_1 = f"""
+        SELECT 
+            c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            amount_paid DESC
+        LIMIT {top_n};
+        """
+        
+        FT_Table_1 = execute_sql(sql_query_1)
+        
+        FT_Table_1.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+        
+        FT_Table_1.index = FT_Table_1.index + 1
+
+        sql_query_2 = f"""
+        SELECT 
+            c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            gross_liability DESC
+        LIMIT {top_n_2};
+        """
+        
+        FT_Table_2 = execute_sql(sql_query_2)
+        
+        FT_Table_2.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+        
+        FT_Table_2.index = FT_Table_2.index + 1
+
         FT_Table = pd.concat([FT_Table_1, FT_Table_2])
         FT_Table = FT_Table.drop_duplicates()
+
         FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
+        FT_Table_OG = FT_Table
+        #FT_Table_1 = FT_Table.nlargest(top_n, "Amount Paid")
+        #FT_Table_2 = FT_Table.nlargest(top_n_2, "Gross Liability")
+        #FT_Table = pd.concat([FT_Table_1, FT_Table_2])
+        #FT_Table = FT_Table.drop_duplicates()
+        #FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
 
     st.subheader("Overall Table Based On Your Limiting Criteria")
     st.dataframe(FT_Table, use_container_width=True)
