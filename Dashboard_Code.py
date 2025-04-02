@@ -32,6 +32,7 @@ def authenticate(username, password):
 # Initialize session state for authentication
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
+    cookies["authenticated"] = "false"
 
 if cookies.get("authenticated") == "true":
         st.session_state.authenticated = True
@@ -200,7 +201,7 @@ if st.session_state.authenticated:
     if logout_button:
         # Clear authentication and delete the cookie
         st.session_state.authenticated = False
-        cookies.delete("authenticated")  # Delete the cookie
+        cookies["authenticated"] = "false"  # Change the cookie
         cookies.save()  # Save the cookie changes
         st.success("You have logged out.")
         st.experimental_rerun()  # Refresh the page to apply the logout
