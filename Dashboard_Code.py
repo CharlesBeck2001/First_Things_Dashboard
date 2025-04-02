@@ -138,7 +138,7 @@ if st.session_state.authenticated:
         with st.container():
             st.markdown(
                 f"""
-                <div style="border: 2px solid #007bff; padding: 20px; border-radius: 10px; background-color: #f0f8ff;">
+                <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
                     <h3>Total Customers</h3>
                     <h4>{total_customers}</h4>
                 </div>
@@ -148,7 +148,7 @@ if st.session_state.authenticated:
         with st.container():
             st.markdown(
                 f"""
-                <div style="border: 2px solid #28a745; padding: 20px; border-radius: 10px; background-color: #e6ffe6;">
+                <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
                     <h3>Total Amount Paid</h3>
                     <h4>${total_amount_paid:,.2f}</h4>
                 </div>
@@ -158,7 +158,7 @@ if st.session_state.authenticated:
         with st.container():
             st.markdown(
                 f"""
-                <div style="border: 2px solid #dc3545; padding: 20px; border-radius: 10px; background-color: #f8d7da;">
+                <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
                     <h3>Total Gross Liability</h3>
                     <h4>${total_gross_liability:,.2f}</h4>
                 </div>
