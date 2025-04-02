@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 import requests
-import streamlit_cookies_manager as cookies_manager
+from streamlit_cookies_manager import Cookies
 
 # Initialize cookies manager
-cookies = cookies_manager.CookieManager()
+cookies = Cookies()
 
 # Accessing usernames and passwords from the secrets file
 USER_CREDENTIALS = {
