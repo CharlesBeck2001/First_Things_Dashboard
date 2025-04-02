@@ -123,6 +123,26 @@ if st.session_state.authenticated:
     FT_Table_OG = FT_Table
     # Your app's main content here
     st.title("First Things Customer Data")
+
+    # Create columns for the stat boxes
+    col1, col2, col3 = st.columns(3)
+    
+    # Calculate the totals
+    total_customers = len(FT_Table)
+    total_amount_paid = FT_Table["Amount Paid"].sum()
+    total_gross_liability = FT_Table["Gross Liability"].sum()
+    
+    # Add stat boxes in columns
+    with col1:
+        st.metric("Total Customers", total_customers)
+    
+    with col2:
+        st.metric("Total Amount Paid", f"${total_amount_paid:,.2f}")
+    
+    with col3:
+        st.metric("Total Gross Liability", f"${total_gross_liability:,.2f}")
+
+    
     # Input box for user to specify N (default is empty)
 
     st.subheader("Filter Data By Total Amount and Gross Liability")
