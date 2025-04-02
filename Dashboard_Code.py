@@ -164,9 +164,11 @@ if st.session_state.authenticated:
                 </div>
                 """, unsafe_allow_html=True)
 
+
+    # Add margin below the metric boxes to create space between them and the next section
+    st.markdown("<br><br>", unsafe_allow_html=True)
     
     # Input box for user to specify N (default is empty)
-
     st.subheader("Filter Data By Total Amount and Gross Liability")
     top_n = st.number_input("Show Top N Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=len(FT_Table), value=None, step=1, format="%d")
 
