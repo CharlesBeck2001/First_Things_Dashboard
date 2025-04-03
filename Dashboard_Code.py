@@ -305,10 +305,10 @@ if st.session_state.authenticated:
     
     # Input box for user to specify N (default is empty)
     st.subheader("Filter Data By Total Amount and Gross Liability")
-    top_n = st.number_input("Show Top N Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=2000, value=None, step=1, format="%d")
+    top_n = st.number_input("Show Top N Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=total_customers, value=None, step=1, format="%d")
 
     # Input box for user to specify N (default is empty)
-    top_n_2 = st.number_input("Show Top N Customers In Terms of Total Liability (leave blank for all)", min_value=1, max_value=2000, value=None, step=1, format="%d")
+    top_n_2 = st.number_input("Show Top N Customers In Terms of Total Liability (leave blank for all)", min_value=1, max_value=total_customers, value=None, step=1, format="%d")
 
     if not top_n and not top_n_2:
 
