@@ -171,6 +171,60 @@ if st.session_state.authenticated:
              return(df)
          else:
              print("Error executing query:", response.status_code, response.json())
+
+    def execute_sql_paginated(query, target_rows=2500, row_limit=1000):
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+        }
+    
+        # Endpoint for the RPC function
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql"
+    
+        # Initialize list to store the results
+        all_data = []
+        start_row = 0
+    
+        # Start the pagination loop
+        while len(all_data) < target_rows:
+            # Set the range for this page
+            range_header = f"{start_row}-{start_row + row_limit - 1}"
+            headers["Range"] = range_header
+    
+            # Payload with the SQL query
+            payload = {"query": query}
+    
+            # Make the API call
+            response = requests.post(rpc_endpoint, headers=headers, json=payload)
+    
+            if response.status_code == 200:
+                data = response.json()
+                if not data:  # No more data left to fetch
+                    break
+    
+                # Add the current batch of data to the list
+                all_data.extend(data)
+    
+                # If we've reached the target number of rows, stop
+                if len(all_data) >= target_rows:
+                    break
+    
+                # Increment the starting row for the next page
+                start_row += row_limit
+            else:
+                print(f"Error executing query: {response.status_code}")
+                print(f"Response: {response.json()}")
+                break
+    
+        # Convert the accumulated data to a DataFrame
+        df = pd.DataFrame(all_data)
+    
+        # If we've collected more rows than requested, slice to target_rows
+        df = df.head(target_rows)
+    
+        print(f"Fetched {len(df)} rows.")
+        return df
     
 
     count_query = """
@@ -307,11 +361,10 @@ if st.session_state.authenticated:
         GROUP BY 
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
         ORDER BY 
-            amount_paid DESC
-        LIMIT {top_n};
+            amount_paid DESC;
         """
         
-        FT_Table = execute_sql(sql_query)
+        FT_Table = execute_sql_paginated(sql_query, target_rows=top_n, row_limit=1000)
         
         FT_Table.rename(columns={
                     "first_name": "First Name",
@@ -345,10 +398,9 @@ if st.session_state.authenticated:
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
         ORDER BY 
             gross_liability DESC
-        LIMIT {top_n_2};
         """
         
-        FT_Table_2 = execute_sql(sql_query_2)
+        FT_Table_2 = execute_sql_paginated(sql_query_2, target_rows=top_n_2, row_limit=1000)
         
         FT_Table_2.rename(columns={
                     "first_name": "First Name",
@@ -382,10 +434,9 @@ if st.session_state.authenticated:
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
         ORDER BY 
             amount_paid DESC
-        LIMIT {top_n};
         """
         
-        FT_Table_1 = execute_sql(sql_query_1)
+        FT_Table_1 = execute_sql_paginated(sql_query_1, target_rows=top_n_1, row_limit=1000)
         
         FT_Table_1.rename(columns={
                     "first_name": "First Name",
@@ -413,10 +464,9 @@ if st.session_state.authenticated:
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
         ORDER BY 
             gross_liability DESC
-        LIMIT {top_n_2};
         """
         
-        FT_Table_2 = execute_sql(sql_query_2)
+        FT_Table_2 = execute_sql_paginated(sql_query_2, target_rows=top_n_2, row_limit=1000)
         
         FT_Table_2.rename(columns={
                     "first_name": "First Name",
@@ -432,6 +482,9 @@ if st.session_state.authenticated:
         FT_Table = FT_Table.drop_duplicates()
 
         FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
+
+        FT_Table = FT_Table.reset_index(drop=True)
+        FT_Table.index = FT_Table.index + 1
         FT_Table_OG = FT_Table
         #FT_Table_1 = FT_Table.nlargest(top_n, "Amount Paid")
         #FT_Table_2 = FT_Table.nlargest(top_n_2, "Gross Liability")
