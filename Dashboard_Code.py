@@ -417,6 +417,8 @@ if st.session_state.authenticated:
         FT_Table_2 = FT_Table_2.drop_duplicates()
         
         FT_Table_2.index = FT_Table_2.index + 1
+
+        FT_Table = FT_Table_2
         
         FT_Table_OG = FT_Table_2
         
