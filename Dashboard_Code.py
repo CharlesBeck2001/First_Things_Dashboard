@@ -418,7 +418,7 @@ if st.session_state.authenticated:
                     "gross_liability": "Gross Liability"
                 }, inplace=True)
         
-        FT_Table_2 = FT_Table_2.drop_duplicates()
+        #FT_Table_2 = FT_Table_2.drop_duplicates()
         
         FT_Table_2.index = FT_Table_2.index + 1
 
@@ -430,6 +430,8 @@ if st.session_state.authenticated:
 
     if top_n and top_n_2:
 
+        top_v = max(top_n, top_n_2)
+        
         sql_query_1 = f"""
         SELECT 
             DISTINCT c.First_Name,
@@ -445,10 +447,10 @@ if st.session_state.authenticated:
         GROUP BY 
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
         ORDER BY 
-            amount_paid DESC
+            amount_paid DESC, gross_liability DESC
         """
         
-        FT_Table_1 = execute_sql_paginated(sql_query_1, target_rows=top_n, row_limit=1000)
+        FT_Table_1 = execute_sql_paginated(sql_query_1, target_rows=top_v, row_limit=1000)
         
         FT_Table_1.rename(columns={
                     "first_name": "First Name",
@@ -460,43 +462,12 @@ if st.session_state.authenticated:
         
         FT_Table_1.index = FT_Table_1.index + 1
 
-        sql_query_2 = f"""
-        SELECT 
-            DISTINCT c.First_Name,
-            c.Last_Name,
-            c.primary_address,
-            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
-            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
-        FROM 
-            ft_customers c
-        JOIN 
-            ft_subscriber_transactions t
-            ON c.customer_number = t.customer_number
-        GROUP BY 
-            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
-        ORDER BY 
-            gross_liability DESC
-        """
-        
-        FT_Table_2 = execute_sql_paginated(sql_query_2, target_rows=top_n_2, row_limit=1000)
-        
-        FT_Table_2.rename(columns={
-                    "first_name": "First Name",
-                    "last_name": "Last Name",
-                    "primary_address": "Primary Address",
-                    "amount_paid": "Amount Paid",
-                    "gross_liability": "Gross Liability"
-                }, inplace=True)
-        
-        FT_Table_2.index = FT_Table_2.index + 1
+        FT_Table = FT_Table_1
 
-        FT_Table = pd.concat([FT_Table_1, FT_Table_2])
-        FT_Table = FT_Table.drop_duplicates()
+        #FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
 
-        FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
-
-        FT_Table = FT_Table.reset_index(drop=True)
-        FT_Table.index = FT_Table.index + 1
+        #FT_Table = FT_Table.reset_index(drop=True)
+        #FT_Table.index = FT_Table.index + 1
         FT_Table_OG = FT_Table
         #FT_Table_1 = FT_Table.nlargest(top_n, "Amount Paid")
         #FT_Table_2 = FT_Table.nlargest(top_n_2, "Gross Liability")
