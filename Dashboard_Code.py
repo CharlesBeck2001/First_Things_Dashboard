@@ -202,7 +202,7 @@ if st.session_state.authenticated:
     
             if response.status_code == 200:
                 data = response.json()
-                print(f"Fetched {len(data)} rows from range {range_header}")  # Debugging line
+                st.write(f"Fetched {len(data)} rows from range {range_header}")  # Debugging line
     
                 if not data:  # No more data left to fetch
                     print("No more data left to fetch.")
