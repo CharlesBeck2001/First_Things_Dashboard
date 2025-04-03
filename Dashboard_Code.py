@@ -174,6 +174,7 @@ if st.session_state.authenticated:
 
     
     def execute_sql_paginated(query, target_rows=2500, row_limit=1000):
+        
         headers = {
             "apikey": supabase_key,
             "Authorization": f"Bearer {supabase_key}",
@@ -181,7 +182,7 @@ if st.session_state.authenticated:
         }
     
         # Endpoint for the RPC function
-        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql"
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_pagination"
     
         # Initialize list to store the results
         all_data = []
@@ -190,19 +191,19 @@ if st.session_state.authenticated:
     
         # Start the pagination loop
         while fetched_rows < target_rows:
-            # Set the range for this page
-            range_header = f"{start_row}-{start_row + row_limit - 1}"
-            headers["Range"] = range_header
+            # Payload with the SQL query, including the current offset and row_limit
+            payload = {
+                "query": query,
+                "page_offset": start_row,
+                "row_limit": row_limit
+            }
     
-            # Payload with the SQL query
-            payload = {"query": query}
-    
-            # Make the API call
+            # Make the API call to Supabase's execute_sql_pagination function
             response = requests.post(rpc_endpoint, headers=headers, json=payload)
     
             if response.status_code == 200:
                 data = response.json()
-                st.write(f"Fetched {len(data)} rows from range {range_header}")  # Debugging line
+                print(f"Fetched {len(data)} rows from offset {start_row}")  # Debugging line
     
                 if not data:  # No more data left to fetch
                     print("No more data left to fetch.")
