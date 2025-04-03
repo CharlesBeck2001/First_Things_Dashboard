@@ -376,11 +376,11 @@ if st.session_state.authenticated:
                     "gross_liability": "Gross Liability"
                 }, inplace=True)
 
-        st.write(len(FT_Table))
+        #st.write(len(FT_Table))
         
         FT_Table = FT_Table.drop_duplicates()
 
-        st.write(len(FT_Table))
+        #st.write(len(FT_Table))
         
         FT_Table.index = FT_Table.index + 1
         
