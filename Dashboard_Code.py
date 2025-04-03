@@ -378,7 +378,7 @@ if st.session_state.authenticated:
 
         #st.write(len(FT_Table))
         
-        FT_Table = FT_Table.drop_duplicates()
+        #FT_Table = FT_Table.drop_duplicates()
 
         #st.write(len(FT_Table))
         
