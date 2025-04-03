@@ -523,7 +523,7 @@ if st.session_state.authenticated:
             WHERE
                 c.First_Name = '{first_name_filter}' AND c.Last_Name = '{last_name_filter}'
             GROUP BY 
-                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
             filtered_df = execute_sql(name_query)
@@ -544,7 +544,7 @@ if st.session_state.authenticated:
             WHERE
                 c.First_Name = '{first_name_filter}'
             GROUP BY 
-                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
             filtered_df = execute_sql_paginated(name_query, target_rows=2000, row_limit=1000)
@@ -565,7 +565,7 @@ if st.session_state.authenticated:
             WHERE
                 c.Last_Name = '{last_name_filter}'
             GROUP BY 
-                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
             filtered_df = execute_sql(name_query)
@@ -603,7 +603,7 @@ if st.session_state.authenticated:
             WHERE
                 c.primary_address = '{adress_filter}'
             GROUP BY 
-                c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
+                c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
             filtered_df_2 = execute_sql(address_query)
