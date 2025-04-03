@@ -314,7 +314,7 @@ if st.session_state.authenticated:
 
         sql_query = f"""
         SELECT 
-            c.First_Name,
+            DISTINCT c.First_Name,
             c.Last_Name,
             c.primary_address,
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -338,6 +338,8 @@ if st.session_state.authenticated:
                     "amount_paid": "Amount Paid",
                     "gross_liability": "Gross Liability"
                 }, inplace=True)
+
+        FT_Table = FT_Table.drop_duplicates()
         
         FT_Table.index = FT_Table.index + 1
         
@@ -348,7 +350,7 @@ if st.session_state.authenticated:
         
         sql_query = f"""
         SELECT 
-            c.First_Name,
+            DISTINCT c.First_Name,
             c.Last_Name,
             c.primary_address,
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -374,6 +376,8 @@ if st.session_state.authenticated:
                     "gross_liability": "Gross Liability"
                 }, inplace=True)
         
+        FT_Table = FT_Table.drop_duplicates()
+        
         FT_Table.index = FT_Table.index + 1
         
         FT_Table_OG = FT_Table
@@ -384,7 +388,7 @@ if st.session_state.authenticated:
         
         sql_query_2 = f"""
         SELECT 
-            c.First_Name,
+            DISTINCT c.First_Name,
             c.Last_Name,
             c.primary_address,
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -410,6 +414,8 @@ if st.session_state.authenticated:
                     "gross_liability": "Gross Liability"
                 }, inplace=True)
         
+        FT_Table_2 = FT_Table_2.drop_duplicates()
+        
         FT_Table_2.index = FT_Table_2.index + 1
         
         FT_Table_OG = FT_Table_2
@@ -420,7 +426,7 @@ if st.session_state.authenticated:
 
         sql_query_1 = f"""
         SELECT 
-            c.First_Name,
+            DISTINCT c.First_Name,
             c.Last_Name,
             c.primary_address,
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -450,7 +456,7 @@ if st.session_state.authenticated:
 
         sql_query_2 = f"""
         SELECT 
-            c.First_Name,
+            DISTINCT c.First_Name,
             c.Last_Name,
             c.primary_address,
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -515,7 +521,7 @@ if st.session_state.authenticated:
 
             name_query = f"""
             SELECT 
-                c.First_Name,
+                DISTINCT c.First_Name,
                 c.Last_Name,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -536,7 +542,7 @@ if st.session_state.authenticated:
 
             name_query = f"""
             SELECT 
-                c.First_Name,
+                DISTINCT c.First_Name,
                 c.Last_Name,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -557,7 +563,7 @@ if st.session_state.authenticated:
 
             name_query = f"""
             SELECT 
-                c.First_Name,
+                DISTINCT c.First_Name,
                 c.Last_Name,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
@@ -595,7 +601,7 @@ if st.session_state.authenticated:
 
             address_query = f"""
             SELECT 
-                c.First_Name,
+                DISTINCT c.First_Name,
                 c.Last_Name,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
