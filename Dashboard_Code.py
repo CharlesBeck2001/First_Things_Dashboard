@@ -540,7 +540,7 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address;
             """
 
-            filtered_df = execute_sql(name_query)
+            filtered_df = execute_sql_paginated(name_query, target_rows=10000, row_limit=1000)
 
         elif last_name_filter:
 
