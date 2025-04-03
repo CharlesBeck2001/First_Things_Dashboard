@@ -577,6 +577,7 @@ if st.session_state.authenticated:
         if filtered_df.empty:
             st.write("No results found for the given search criteria.")
         else:
+            filtered_df.index = filtered_df.index + 1
             st.subheader("Filtered Customer Data Based on Your Search")
             st.dataframe(filtered_df, use_container_width=True)
 
@@ -612,6 +613,7 @@ if st.session_state.authenticated:
         if filtered_df_2 is None:
             st.write("No results found for the given search criteria.")
         else:
+            filtered_df_2.index = filtered_df_2.index + 1
             st.subheader("Filtered Customer Data Based on Your Search")
             st.dataframe(filtered_df_2, use_container_width=True)
 
