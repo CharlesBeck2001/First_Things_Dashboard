@@ -376,7 +376,6 @@ if st.session_state.authenticated:
         FROM 
             RankedTransactions
         WHERE row_num = 1
-        LIMIT 1000;
         """
         
         FT_Table = execute_sql_paginated(sql_query, target_rows=top_n, row_limit=1000)
