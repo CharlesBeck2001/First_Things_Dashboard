@@ -265,6 +265,7 @@ if st.session_state.authenticated:
     
     # Your app's main content here
     st.title("First Things Customer Data")
+    st.subheader("First Things Stats")
 
     # Create columns for the stat boxes
     col1, col2, col3 = st.columns(3)
