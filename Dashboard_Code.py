@@ -436,7 +436,7 @@ if st.session_state.authenticated:
             amount_paid DESC
         """
         
-        FT_Table_1 = execute_sql_paginated(sql_query_1, target_rows=top_n_1, row_limit=1000)
+        FT_Table_1 = execute_sql_paginated(sql_query_1, target_rows=top_n, row_limit=1000)
         
         FT_Table_1.rename(columns={
                     "first_name": "First Name",
