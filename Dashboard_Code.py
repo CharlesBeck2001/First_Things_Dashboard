@@ -349,33 +349,21 @@ if st.session_state.authenticated:
     if top_n and not top_n_2:
         
         sql_query = f"""
-        WITH RankedTransactions AS (
-            SELECT 
-                c.First_Name,
-                c.Last_Name,
-                c.primary_address,
-                SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
-                SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability,
-                ROW_NUMBER() OVER (PARTITION BY c.customer_number ORDER BY c.customer_number) AS row_num
-            FROM 
-                ft_customers c
-            JOIN 
-                ft_subscriber_transactions t
-                ON c.customer_number = t.customer_number
-            GROUP BY 
-                c.customer_number, c.First_Name, c.Last_Name, c.primary_address
-            ORDER BY
-                amount_paid DESC
-        )
         SELECT 
-            First_Name,
-            Last_Name,
-            primary_address,
-            amount_paid,
-            gross_liability
+            DISTINCT c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            RankedTransactions
-        WHERE row_num = 1
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            amount_paid DESC
         """
         
         FT_Table = execute_sql_paginated(sql_query, target_rows=top_n, row_limit=1000)
