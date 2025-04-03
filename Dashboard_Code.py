@@ -172,6 +172,7 @@ if st.session_state.authenticated:
          else:
              print("Error executing query:", response.status_code, response.json())
 
+    
     def execute_sql_paginated(query, target_rows=2500, row_limit=1000):
         headers = {
             "apikey": supabase_key,
@@ -185,9 +186,10 @@ if st.session_state.authenticated:
         # Initialize list to store the results
         all_data = []
         start_row = 0
+        fetched_rows = 0
     
         # Start the pagination loop
-        while len(all_data) < target_rows:
+        while fetched_rows < target_rows:
             # Set the range for this page
             range_header = f"{start_row}-{start_row + row_limit - 1}"
             headers["Range"] = range_header
@@ -200,14 +202,18 @@ if st.session_state.authenticated:
     
             if response.status_code == 200:
                 data = response.json()
+                print(f"Fetched {len(data)} rows from range {range_header}")  # Debugging line
+    
                 if not data:  # No more data left to fetch
+                    print("No more data left to fetch.")
                     break
     
                 # Add the current batch of data to the list
                 all_data.extend(data)
+                fetched_rows += len(data)
     
                 # If we've reached the target number of rows, stop
-                if len(all_data) >= target_rows:
+                if fetched_rows >= target_rows:
                     break
     
                 # Increment the starting row for the next page
@@ -223,7 +229,7 @@ if st.session_state.authenticated:
         # If we've collected more rows than requested, slice to target_rows
         df = df.head(target_rows)
     
-        print(f"Fetched {len(df)} rows.")
+        print(f"Fetched {fetched_rows} rows.")
         return df
     
 
