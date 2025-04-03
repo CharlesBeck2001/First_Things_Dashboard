@@ -344,6 +344,8 @@ if st.session_state.authenticated:
         FT_Table.index = FT_Table.index + 1
         
         FT_Table_OG = FT_Table
+        st.subheader("Table Containing The First 1000 Entries In Database (Representative Sample)")
+        st.dataframe(FT_Table, use_container_width=True)
     
     # Filter only if the user provides an N value
     if top_n and not top_n_2:
@@ -385,6 +387,8 @@ if st.session_state.authenticated:
         FT_Table.index = FT_Table.index + 1
         
         FT_Table_OG = FT_Table
+        st.subheader("Overall Table Based On Your Limiting Criteria")
+        st.dataframe(FT_Table, use_container_width=True)
         
         #FT_Table = FT_Table.nlargest(top_n, "Amount Paid")
 
@@ -425,6 +429,8 @@ if st.session_state.authenticated:
         FT_Table = FT_Table_2
         
         FT_Table_OG = FT_Table_2
+        st.subheader("Overall Table Based On Your Limiting Criteria")
+        st.dataframe(FT_Table, use_container_width=True)
         
         #FT_Table = FT_Table.nlargest(top_n_2, "Gross Liability")
 
@@ -475,8 +481,8 @@ if st.session_state.authenticated:
         #FT_Table = FT_Table.drop_duplicates()
         #FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
 
-    st.subheader("Overall Table Based On Your Limiting Criteria")
-    st.dataframe(FT_Table, use_container_width=True)
+        st.subheader("Overall Table Based On Your Limiting Criteria")
+        st.dataframe(FT_Table, use_container_width=True)
 
     st.subheader("Search By Name")
     # --- Customer Search Filtering ---
