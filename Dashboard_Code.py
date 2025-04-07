@@ -3,6 +3,8 @@ import os
 import pandas as pd
 import requests
 from streamlit_cookies_manager import EncryptedCookieManager
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 # Initialize the cookie manager
 # This should be on top of your script
@@ -350,10 +352,60 @@ if st.session_state.authenticated:
         FT_Table = FT_Table.drop_duplicates()
         
         FT_Table.index = FT_Table.index + 1
-        
-        FT_Table_OG = FT_Table
+
+            # Create the new column: Amount Paid - Gross Liability
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
+
         st.subheader("Table Containing The First 1000 Entries In Database (Representative Sample)")
         st.dataframe(FT_Table, use_container_width=True)
+        
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Amount Paid"], name="Amount Paid"),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Gross Liability"], name="Gross Liability"),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Net Paid"], name="Net Paid"),
+            row=1, col=3
+        )
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="Financial Distributions",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        fig.show()
+        
+        FT_Table_OG = FT_Table
     
     # Filter only if the user provides an N value
     if top_n and not top_n_2:
