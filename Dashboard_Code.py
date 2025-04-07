@@ -403,7 +403,7 @@ if st.session_state.authenticated:
         fig.update_yaxes(title_text="Frequency", row=1, col=3)
         
         # Show the interactive plot
-        fig.show()
+        st.plotly_chart(fig, use_container_width=True)
         
         FT_Table_OG = FT_Table
     
