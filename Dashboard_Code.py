@@ -453,6 +453,54 @@ if st.session_state.authenticated:
         st.subheader("Overall Table Based On Your Limiting Criteria")
         st.dataframe(FT_Table, use_container_width=True)
         
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Amount Paid"], name="Amount Paid"),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Gross Liability"], name="Gross Liability"),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Net Paid"], name="Net Paid"),
+            row=1, col=3
+        )
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        st.subheader("Distribution of Information In Above Selection")
+        st.plotly_chart(fig, use_container_width=True)
+        
+        
         #FT_Table = FT_Table.nlargest(top_n, "Amount Paid")
 
     if top_n_2 and not top_n:
@@ -494,6 +542,54 @@ if st.session_state.authenticated:
         FT_Table_OG = FT_Table_2
         st.subheader("Overall Table Based On Your Limiting Criteria")
         st.dataframe(FT_Table, use_container_width=True)
+
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Amount Paid"], name="Amount Paid"),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Gross Liability"], name="Gross Liability"),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Net Paid"], name="Net Paid"),
+            row=1, col=3
+        )
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        st.subheader("Distribution of Information In Above Selection")
+        st.plotly_chart(fig, use_container_width=True)
+        
         
         #FT_Table = FT_Table.nlargest(top_n_2, "Gross Liability")
 
@@ -546,6 +642,54 @@ if st.session_state.authenticated:
 
         st.subheader("Overall Table Based On Your Limiting Criteria")
         st.dataframe(FT_Table, use_container_width=True)
+
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Amount Paid"], name="Amount Paid"),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Gross Liability"], name="Gross Liability"),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(x=FT_Table["Net Paid"], name="Net Paid"),
+            row=1, col=3
+        )
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        st.subheader("Distribution of Information In Above Selection")
+        st.plotly_chart(fig, use_container_width=True)
+        
 
     st.subheader("Search By Name")
     # --- Customer Search Filtering ---
