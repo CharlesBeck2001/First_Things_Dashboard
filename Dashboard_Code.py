@@ -786,7 +786,7 @@ if st.session_state.authenticated:
 
             name_query = f"""
             SELECT 
-                DISTINCT c.customer_number,
+                c.customer_number,
                 c.First_Name,
                 c.Last_Name,
                 c.primary_address,
