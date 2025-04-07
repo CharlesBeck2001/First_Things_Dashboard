@@ -450,6 +450,8 @@ if st.session_state.authenticated:
         FT_Table.index = FT_Table.index + 1
         
         FT_Table_OG = FT_Table
+
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
         st.subheader("Overall Table Based On Your Limiting Criteria")
         st.dataframe(FT_Table, use_container_width=True)
         
@@ -540,6 +542,7 @@ if st.session_state.authenticated:
         FT_Table = FT_Table_2
         
         FT_Table_OG = FT_Table_2
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
         st.subheader("Overall Table Based On Your Limiting Criteria")
         st.dataframe(FT_Table, use_container_width=True)
 
@@ -639,7 +642,7 @@ if st.session_state.authenticated:
         #FT_Table = pd.concat([FT_Table_1, FT_Table_2])
         #FT_Table = FT_Table.drop_duplicates()
         #FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
-
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
         st.subheader("Overall Table Based On Your Limiting Criteria")
         st.dataframe(FT_Table, use_container_width=True)
 
