@@ -786,8 +786,7 @@ if st.session_state.authenticated:
 
             name_query = f"""
             SELECT 
-                c.customer_number,
-                c.First_Name,
+                DISTINCT c.First_Name,
                 c.Last_Name,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
