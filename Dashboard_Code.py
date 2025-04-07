@@ -370,21 +370,34 @@ if st.session_state.authenticated:
         
         # Histogram 1: Amount Paid
         fig.add_trace(
-            go.Histogram(x=FT_Table["Amount Paid"], name="Amount Paid"),
+            go.Histogram(
+                x=FT_Table["Amount Paid"],
+                name="Amount Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
             row=1, col=1
         )
         
         # Histogram 2: Gross Liability
         fig.add_trace(
-            go.Histogram(x=FT_Table["Gross Liability"], name="Gross Liability"),
+            go.Histogram(
+                x=FT_Table["Gross Liability"],
+                name="Gross Liability",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
             row=1, col=2
         )
         
         # Histogram 3: Net Paid
         fig.add_trace(
-            go.Histogram(x=FT_Table["Net Paid"], name="Net Paid"),
+            go.Histogram(
+                x=FT_Table["Net Paid"],
+                name="Net Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
             row=1, col=3
         )
+
         
         # Layout tweaks for aesthetics
         fig.update_layout(
