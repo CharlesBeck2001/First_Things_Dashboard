@@ -6,6 +6,8 @@ from streamlit_cookies_manager import EncryptedCookieManager
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+
+st.set_page_config(layout="wide")
 # Initialize the cookie manager
 # This should be on top of your script
 cookies = EncryptedCookieManager(
