@@ -828,7 +828,7 @@ if st.session_state.authenticated:
         #   filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
         
         # Display the distinct filtered dataframe if results are found
-        if filtered_df.empty:
+        if filtered_df is None:
             st.write("No results found for the given search criteria.")
         else:
             filtered_df.index = filtered_df.index + 1
