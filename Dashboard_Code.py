@@ -767,6 +767,7 @@ if st.session_state.authenticated:
             SELECT 
                 DISTINCT c.First_Name,
                 c.Last_Name,
+                c.customer_number,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
