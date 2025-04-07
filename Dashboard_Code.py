@@ -388,7 +388,7 @@ if st.session_state.authenticated:
         
         # Layout tweaks for aesthetics
         fig.update_layout(
-            title_text="Financial Distributions",
+            title_text="",
             height=400,
             width=1200,
             showlegend=False,
@@ -405,6 +405,7 @@ if st.session_state.authenticated:
         fig.update_yaxes(title_text="Frequency", row=1, col=3)
         
         # Show the interactive plot
+        st.subheader("Distribution of Information In Above Data")
         st.plotly_chart(fig, use_container_width=True)
         
         FT_Table_OG = FT_Table
