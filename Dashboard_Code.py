@@ -916,8 +916,18 @@ if st.session_state.authenticated:
             """
 
             filtered_df = execute_sql_c_numb(name_query)
+
+        filtered_df.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "customer_number": "Customer Number",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
         #if last_name_filter:
         #   filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
+
         
         # Display the distinct filtered dataframe if results are found
         if filtered_df is None:
