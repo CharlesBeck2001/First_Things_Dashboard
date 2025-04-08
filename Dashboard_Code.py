@@ -1022,7 +1022,7 @@ if st.session_state.authenticated:
         format="%d"   # This ensures the input is formatted as an integer
     )
     
-    if customer_id:
+    if customer_number:
         
         transaction_query = f"""
         SELECT 
