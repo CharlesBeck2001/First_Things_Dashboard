@@ -264,6 +264,66 @@ if st.session_state.authenticated:
     
         print(f"Fetched {fetched_rows} rows.")
         return df
+
+    def execute_sql_paginated_c_numb(query, target_rows=2500, row_limit=1000):
+        
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+        }
+    
+        # Endpoint for the RPC function
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_pagination_c_numb"
+    
+        # Initialize list to store the results
+        all_data = []
+        start_row = 0
+        fetched_rows = 0
+    
+        # Start the pagination loop
+        while fetched_rows < target_rows:
+            # Payload with the SQL query, including the current offset and row_limit
+            payload = {
+                "query": query,
+                "page_offset": start_row,
+                "row_limit": row_limit
+            }
+    
+            # Make the API call to Supabase's execute_sql_pagination function
+            response = requests.post(rpc_endpoint, headers=headers, json=payload)
+    
+            if response.status_code == 200:
+                data = response.json()
+                print(f"Fetched {len(data)} rows from offset {start_row}")  # Debugging line
+    
+                if not data:  # No more data left to fetch
+                    print("No more data left to fetch.")
+                    break
+    
+                # Add the current batch of data to the list
+                all_data.extend(data)
+                fetched_rows += len(data)
+    
+                # If we've reached the target number of rows, stop
+                if fetched_rows >= target_rows:
+                    break
+    
+                # Increment the starting row for the next page
+                start_row += row_limit
+            else:
+                print(f"Error executing query: {response.status_code}")
+                print(f"Response: {response.json()}")
+                break
+    
+        # Convert the accumulated data to a DataFrame
+        df = pd.DataFrame(all_data)
+    
+        # If we've collected more rows than requested, slice to target_rows
+        df = df.head(target_rows)
+    
+        print(f"Fetched {fetched_rows} rows.")
+        return df
     
 
     count_query = """
@@ -818,6 +878,7 @@ if st.session_state.authenticated:
             SELECT 
                 DISTINCT c.First_Name,
                 c.Last_Name,
+                c.customer_number,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
@@ -832,7 +893,7 @@ if st.session_state.authenticated:
             """
 
 
-            filtered_df = execute_sql_paginated(name_query, target_rows=5000, row_limit=1000)
+            filtered_df = execute_sql_paginated_c_numb(name_query, target_rows=5000, row_limit=1000)
 
         elif last_name_filter:
 
