@@ -1037,7 +1037,7 @@ if st.session_state.authenticated:
         JOIN 
             ft_subscriber_transactions t ON c.customer_number = t.customer_number
         WHERE 
-            c.customer_number = '{customer_id}'
+            c.customer_number = '{customer_number}'
         ORDER BY 
             t.transaction_date DESC
         """
