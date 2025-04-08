@@ -985,6 +985,29 @@ if st.session_state.authenticated:
             st.dataframe(filtered_df_2, use_container_width=True)
 
 
+    st.subheader("Look Up Transactions By Customer Number")
+    adress_filter = st.text_input("Insert Customer Number", "")
+
+    
+    query = f"""
+    SELECT 
+        c.First_Name,
+        c.Last_Name,
+        c.customer_number,
+        t.transaction_date,
+        CAST(t.gross_value AS NUMERIC) AS amount_paid,
+        CAST(t.gross_liability AS NUMERIC) AS gross_liability
+    FROM 
+        ft_customers c
+    JOIN 
+        ft_subscriber_transactions t ON c.customer_number = t.customer_number
+    WHERE 
+        c.customer_number = '{customer_id}'
+    ORDER BY 
+        t.transaction_date DESC
+    """
+
+    
     logout_button = st.button("Logout")
     if logout_button:
         # Clear authentication and delete the cookie
@@ -995,10 +1018,3 @@ if st.session_state.authenticated:
         st.rerun()  # Refresh the page to apply the logout
 
 
-            
-    # Display the top N table if no search is applied, or show the full database
-    #if not filtered_df:
-    
-    # Display the filtered table
-    #st.dataframe(FT_Table, use_container_width=True)
-# Add a Logout button at the bottom of the page
