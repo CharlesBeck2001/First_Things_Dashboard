@@ -94,6 +94,34 @@ if st.session_state.authenticated:
             print("Error executing query:", response.status_code, response.json())
 
 
+    def execute_sql_c_numb(query):
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+            "Range": "0-99999"  # Request more rows explicitly
+        }
+        # Endpoint for the RPC function
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_c_numb"
+            
+        # Payload with the SQL query
+        payload = {"query": query}
+            
+        # Make the POST request to the RPC function
+        response = requests.post(rpc_endpoint, headers=headers, json=payload)
+            
+        # Handle response
+        if response.status_code == 200:
+            data = response.json()
+                
+            df = pd.DataFrame(data)
+                
+            print("Query executed successfully, returning DataFrame.")
+            return(df)
+        else:
+            print("Error executing query:", response.status_code, response.json())
+
+
     def execute_sql_count(query):
          headers = {
              "apikey": supabase_key,
@@ -767,6 +795,7 @@ if st.session_state.authenticated:
             SELECT 
                 DISTINCT c.First_Name,
                 c.Last_Name,
+                c.customer_number,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
@@ -780,19 +809,7 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
-            number_query = f"""
-            SELECT 
-                c.First_Name,
-                c.Last_Name,
-                c.customer_number
-            FROM 
-                ft_customers c
-            WHERE
-                c.First_Name = 'Charles'
-            """
-
-            filtered_df = execute_sql(name_query)
-            number_df = execute_sql(number_query)
+            filtered_df = execute_sql_count(name_query)
             
 
         elif first_name_filter:
@@ -814,19 +831,7 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
-            number_query = f"""
-            SELECT 
-                c.First_Name,
-                c.Last_Name,
-                c.customer_number
-            FROM 
-                ft_customers c
-            WHERE
-                c.First_Name = 'Charles'
-            """
 
-
-            number_df = execute_sql_paginated(number_query, target_rows=5000, row_limit=1000)
             filtered_df = execute_sql_paginated(name_query, target_rows=5000, row_limit=1000)
 
         elif last_name_filter:
@@ -835,6 +840,7 @@ if st.session_state.authenticated:
             SELECT 
                 DISTINCT c.First_Name,
                 c.Last_Name,
+                c.customer_number,
                 c.primary_address,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
@@ -848,20 +854,7 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
-            number_query = f"""
-            SELECT 
-                c.First_Name,
-                c.Last_Name,
-                c.customer_number
-            FROM 
-                ft_customers c
-            WHERE
-                c.First_Name = 'Charles'
-            """
-
-
-            number_df = execute_sql(number_query)
-            filtered_df = execute_sql(name_query)
+            filtered_df = execute_sql_count(name_query)
         #if last_name_filter:
         #   filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
         
