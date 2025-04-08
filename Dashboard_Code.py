@@ -178,32 +178,28 @@ if st.session_state.authenticated:
              print("Error executing query:", response.status_code, response.json())
 
 
-    def execute_dynamic_query(query):
-         headers = {
-             "apikey": supabase_key,
-             "Authorization": f"Bearer {supabase_key}",
-             "Content-Type": "application/json",
-             "Range": "0-99999"  # Request more rows explicitly
-         }
-         # Endpoint for the RPC function
-         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_dynamic_query"
-             
-         # Payload with the SQL query
-         payload = {"query": query}
-             
-         # Make the POST request to the RPC function
-         response = requests.post(rpc_endpoint, headers=headers, json=payload)
-             
-         # Handle response
-         if response.status_code == 200:
-             data = response.json()
-                 
-             df = pd.DataFrame(data)
-                 
-             print("Query executed successfully, returning DataFrame.")
-             return(df)
-         else:
-             print("Error executing query:", response.status_code, response.json())
+    def get_transactions(customer_number):
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+            "Range": "0-99999"
+        }
+        
+        # RPC endpoint matches the function name
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/get_transactions"
+        
+        payload = {"p_customer_number": customer_number}
+        
+        response = requests.post(rpc_endpoint, headers=headers, json=payload)
+        
+        if response.status_code == 200:
+            data = response.json()
+            df = pd.DataFrame(data)
+            print("Query executed successfully, returning DataFrame.")
+            return df
+        else:
+            print("Error executing query:", response.status_code, response.text)
 
     
     def execute_sql_amount(query):
@@ -1023,27 +1019,9 @@ if st.session_state.authenticated:
     )
     
     if customer_number:
-        
-        transaction_query = f"""
-        SELECT 
-            c.First_Name,
-            c.Last_Name,
-            c.customer_number,
-            t.transaction_date,
-            CAST(t.gross_value AS NUMERIC) AS amount_paid,
-            CAST(t.gross_liability AS NUMERIC) AS gross_liability
-        FROM 
-            ft_customers c
-        JOIN 
-            ft_subscriber_transactions t ON c.customer_number = t.customer_number
-        WHERE 
-            c.customer_number = '{customer_number}'
-        ORDER BY 
-            t.transaction_date DESC
-        """
 
-        st.write(execute_dynamic_query(transaction_query))
-        customer_transaction_df = execute_dynamic_query(transaction_query)
+        st.write(get_transactions(customer_number))
+        customer_transaction_df = get_transactions(customer_number)
 
 
         if customer_transaction_df is None:
