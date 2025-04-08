@@ -826,7 +826,7 @@ if st.session_state.authenticated:
             """
 
 
-            number_df = execute_sql_paginated(number_query)
+            number_df = execute_sql_paginated(number_query, target_rows=5000, row_limit=1000)
             filtered_df = execute_sql_paginated(name_query, target_rows=5000, row_limit=1000)
 
         elif last_name_filter:
