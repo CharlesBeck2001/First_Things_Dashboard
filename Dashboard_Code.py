@@ -1042,6 +1042,7 @@ if st.session_state.authenticated:
             t.transaction_date DESC
         """
 
+        st.write(execute_dynamic_query(transaction_query))
         customer_transaction_df = execute_dynamic_query(transaction_query)
 
 
