@@ -158,7 +158,7 @@ if st.session_state.authenticated:
              "Range": "0-99999"  # Request more rows explicitly
          }
          # Endpoint for the RPC function
-         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_count"
+         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_c_numb"
              
          # Payload with the SQL query
          payload = {"query": query}
