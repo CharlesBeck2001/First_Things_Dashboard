@@ -953,6 +953,7 @@ if st.session_state.authenticated:
                 DISTINCT c.First_Name,
                 c.Last_Name,
                 c.primary_address,
+                c.customer_number,
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
             FROM 
@@ -965,7 +966,16 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
-            filtered_df_2 = execute_sql(address_query)
+            filtered_df_2 = execute_sql_c_numb(address_query)
+
+            filtered_df_2.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "customer_number": "Customer Number",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
         # Display the distinct filtered dataframe if results are found
         if filtered_df_2 is None:
             st.write("No results found for the given search criteria.")
