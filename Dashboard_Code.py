@@ -780,7 +780,20 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
+            number_query = f"""
+            SELECT 
+                c.First_Name,
+                c.Last_Name,
+                c.customer_number
+            FROM 
+                ft_customers c
+            WHERE
+                c.First_Name = 'Charles'
+            """
+
             filtered_df = execute_sql(name_query)
+            number_df = execute_sql(number_query)
+            
 
         elif first_name_filter:
 
@@ -801,6 +814,19 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
+            number_query = f"""
+            SELECT 
+                c.First_Name,
+                c.Last_Name,
+                c.customer_number
+            FROM 
+                ft_customers c
+            WHERE
+                c.First_Name = 'Charles'
+            """
+
+
+            number_df = execute_sql_paginated(number_query)
             filtered_df = execute_sql_paginated(name_query, target_rows=5000, row_limit=1000)
 
         elif last_name_filter:
@@ -822,6 +848,19 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
+            number_query = f"""
+            SELECT 
+                c.First_Name,
+                c.Last_Name,
+                c.customer_number
+            FROM 
+                ft_customers c
+            WHERE
+                c.First_Name = 'Charles'
+            """
+
+
+            number_df = execute_sql(number_query)
             filtered_df = execute_sql(name_query)
         #if last_name_filter:
         #   filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
@@ -833,6 +872,12 @@ if st.session_state.authenticated:
             filtered_df.index = filtered_df.index + 1
             st.subheader("Filtered Customer Data Based on Your Search")
             st.dataframe(filtered_df, use_container_width=True)
+
+        if number_df is not None:
+            number_df.index = number_df.index + 1
+            st.subheader("Customer Numbers And Their Corresponding Customers")
+            st.dataframe(number_df, use_container_width=True)
+        
 
     st.subheader("Search By Address")
     adress_filter = st.text_input("Filter by Address", "")
