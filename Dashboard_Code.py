@@ -177,6 +177,35 @@ if st.session_state.authenticated:
          else:
              print("Error executing query:", response.status_code, response.json())
 
+
+     def execute_dynamic_query(query):
+         headers = {
+             "apikey": supabase_key,
+             "Authorization": f"Bearer {supabase_key}",
+             "Content-Type": "application/json",
+             "Range": "0-99999"  # Request more rows explicitly
+         }
+         # Endpoint for the RPC function
+         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_dynamic_query"
+             
+         # Payload with the SQL query
+         payload = {"query": query}
+             
+         # Make the POST request to the RPC function
+         response = requests.post(rpc_endpoint, headers=headers, json=payload)
+             
+         # Handle response
+         if response.status_code == 200:
+             data = response.json()
+                 
+             df = pd.DataFrame(data)
+                 
+             print("Query executed successfully, returning DataFrame.")
+             return(df)
+         else:
+             print("Error executing query:", response.status_code, response.json())
+
+    
     def execute_sql_amount(query):
          headers = {
              "apikey": supabase_key,
@@ -986,26 +1015,37 @@ if st.session_state.authenticated:
 
 
     st.subheader("Look Up Transactions By Customer Number")
-    adress_filter = st.text_input("Insert Customer Number", "")
-
+    customer_id = st.number_input("Show Transactions For Chosen Customer Number")
     
-    query = f"""
-    SELECT 
-        c.First_Name,
-        c.Last_Name,
-        c.customer_number,
-        t.transaction_date,
-        CAST(t.gross_value AS NUMERIC) AS amount_paid,
-        CAST(t.gross_liability AS NUMERIC) AS gross_liability
-    FROM 
-        ft_customers c
-    JOIN 
-        ft_subscriber_transactions t ON c.customer_number = t.customer_number
-    WHERE 
-        c.customer_number = '{customer_id}'
-    ORDER BY 
-        t.transaction_date DESC
-    """
+    if customer_id:
+        
+        transaction_query = f"""
+        SELECT 
+            c.First_Name,
+            c.Last_Name,
+            c.customer_number,
+            t.transaction_date,
+            CAST(t.gross_value AS NUMERIC) AS amount_paid,
+            CAST(t.gross_liability AS NUMERIC) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t ON c.customer_number = t.customer_number
+        WHERE 
+            c.customer_number = '{customer_id}'
+        ORDER BY 
+            t.transaction_date DESC
+        """
+
+        customer_transaction_df = execute_dynamic_query(transaction_query)
+
+
+        if customer_transaction_df is None:
+            st.write("No results found for the given search criteria.")
+        else:
+            customer_transaction_df.index = customer_transaction_df.index + 1
+            st.subheader("Filtered Customer Transaction Data Based on Your Search")
+            st.dataframe(customer_transaction_df, use_container_width=True)
 
     
     logout_button = st.button("Logout")
