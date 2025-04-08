@@ -1015,7 +1015,12 @@ if st.session_state.authenticated:
 
 
     st.subheader("Look Up Transactions By Customer Number")
-    customer_id = st.number_input("Show Transactions For Chosen Customer Number")
+    customer_number = st.number_input(
+        "Show Transactions For Chosen Customer Number", 
+        min_value=1,  # You can adjust the minimum value as needed
+        step=1,       # This ensures the input is an integer
+        format="%d"   # This ensures the input is formatted as an integer
+    )
     
     if customer_id:
         
