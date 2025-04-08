@@ -865,13 +865,6 @@ if st.session_state.authenticated:
             filtered_df.index = filtered_df.index + 1
             st.subheader("Filtered Customer Data Based on Your Search")
             st.dataframe(filtered_df, use_container_width=True)
-
-        if number_df is None:
-            st.write("No customer numbers found for the given search criteria.")
-        else:
-            number_df.index = number_df.index + 1
-            st.subheader("Customer Numbers And Their Corresponding Customers")
-            st.dataframe(number_df, use_container_width=True)
         
 
     st.subheader("Search By Address")
