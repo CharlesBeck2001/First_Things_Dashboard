@@ -178,7 +178,7 @@ if st.session_state.authenticated:
              print("Error executing query:", response.status_code, response.json())
 
 
-     def execute_dynamic_query(query):
+    def execute_dynamic_query(query):
          headers = {
              "apikey": supabase_key,
              "Authorization": f"Bearer {supabase_key}",
