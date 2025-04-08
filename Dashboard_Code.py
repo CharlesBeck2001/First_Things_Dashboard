@@ -158,7 +158,7 @@ if st.session_state.authenticated:
              "Range": "0-99999"  # Request more rows explicitly
          }
          # Endpoint for the RPC function
-         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_c_numb"
+         rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_sql_count"
              
          # Payload with the SQL query
          payload = {"query": query}
@@ -809,7 +809,7 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
-            filtered_df = execute_sql_count(name_query)
+            filtered_df = execute_sql_c_numb(name_query)
             
 
         elif first_name_filter:
@@ -854,7 +854,7 @@ if st.session_state.authenticated:
                 c.customer_number, c.First_Name, c.Last_Name, c.primary_address
             """
 
-            filtered_df = execute_sql_count(name_query)
+            filtered_df = execute_sql_c_numb(name_query)
         #if last_name_filter:
         #   filtered_df = filtered_df[filtered_df["Last Name"].str.contains(last_name_filter, case=False, na=False)]
         
