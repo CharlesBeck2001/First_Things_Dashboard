@@ -1020,7 +1020,7 @@ if st.session_state.authenticated:
     
     if customer_number:
 
-        st.write(get_transactions(customer_number))
+        #st.write(get_transactions(customer_number))
         customer_transaction_df = get_transactions(customer_number)
 
 
