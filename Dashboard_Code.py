@@ -858,6 +858,443 @@ if st.session_state.authenticated:
         st.plotly_chart(fig, use_container_width=True)
         
 
+    # Input box for user to specify N (default is empty)
+    st.subheader("Filter Currently Subscribed Data By Total Amount and Gross Liability")
+    top_n = st.number_input("Show Top N Currently Subscribed Customers In Terms of Total Amount Paid (leave blank for all)", min_value=1, max_value=total_customers, value=None, step=1, format="%d")
+
+    # Input box for user to specify N (default is empty)
+    top_n_2 = st.number_input("Show Top N Currently Subscribed Customers In Terms of Total Liability (leave blank for all)", min_value=1, max_value=total_customers, value=None, step=1, format="%d")
+
+    if not top_n and not top_n_2:
+
+        sql_query = f"""
+        SELECT 
+            DISTINCT c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        WHERE 
+            t.record_status IS NULL
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        LIMIT 1000;
+        """
+
+        FT_Table = execute_sql(sql_query)
+        
+        FT_Table.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+
+        FT_Table = FT_Table.drop_duplicates()
+        
+        FT_Table.index = FT_Table.index + 1
+
+            # Create the new column: Amount Paid - Gross Liability
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
+
+        st.subheader("Table Containing The First 1000 Entries In Database (Representative Sample)")
+        st.dataframe(FT_Table, use_container_width=True)
+        
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Amount Paid"],
+                name="Amount Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Gross Liability"],
+                name="Gross Liability",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Net Paid"],
+                name="Net Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=3
+        )
+
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        st.subheader("Distribution of Information In Above Data")
+        st.plotly_chart(fig, use_container_width=True)
+        
+        FT_Table_OG = FT_Table
+    
+    # Filter only if the user provides an N value
+    if top_n and not top_n_2:
+        
+        sql_query = f"""
+        SELECT 
+            DISTINCT c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        WHERE 
+            t.record_status IS NULL
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            amount_paid DESC
+        """
+        
+        FT_Table = execute_sql_paginated(sql_query, target_rows=top_n, row_limit=1000)
+        
+        FT_Table.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+
+        #st.write(len(FT_Table))
+        
+        #FT_Table = FT_Table.drop_duplicates()
+
+        #st.write(len(FT_Table))
+        
+        FT_Table.index = FT_Table.index + 1
+        
+        FT_Table_OG = FT_Table
+
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
+        st.subheader("Overall Table Based On Your Limiting Criteria")
+        st.dataframe(FT_Table, use_container_width=True)
+        
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Amount Paid"],
+                name="Amount Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Gross Liability"],
+                name="Gross Liability",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Net Paid"],
+                name="Net Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=3
+        )
+
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        st.subheader("Distribution of Information In Above Selection")
+        st.plotly_chart(fig, use_container_width=True)
+        
+        
+        #FT_Table = FT_Table.nlargest(top_n, "Amount Paid")
+
+    if top_n_2 and not top_n:
+        
+        sql_query_2 = f"""
+        SELECT 
+            DISTINCT c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        WHERE 
+            t.record_status IS NULL
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            gross_liability DESC
+        """
+        
+        FT_Table_2 = execute_sql_paginated(sql_query_2, target_rows=top_n_2, row_limit=1000)
+        
+        FT_Table_2.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+        
+        #FT_Table_2 = FT_Table_2.drop_duplicates()
+        
+        FT_Table_2.index = FT_Table_2.index + 1
+
+        FT_Table = FT_Table_2
+        
+        FT_Table_OG = FT_Table_2
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
+        st.subheader("Overall Table Based On Your Limiting Criteria")
+        st.dataframe(FT_Table, use_container_width=True)
+
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Amount Paid"],
+                name="Amount Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Gross Liability"],
+                name="Gross Liability",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Net Paid"],
+                name="Net Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=3
+        )
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        st.subheader("Distribution of Information In Above Selection")
+        st.plotly_chart(fig, use_container_width=True)
+        
+        
+        #FT_Table = FT_Table.nlargest(top_n_2, "Gross Liability")
+
+    if top_n and top_n_2:
+
+        top_v = max(top_n, top_n_2)
+        
+        sql_query_1 = f"""
+        SELECT 
+            DISTINCT c.First_Name,
+            c.Last_Name,
+            c.primary_address,
+            SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
+            SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
+        FROM 
+            ft_customers c
+        JOIN 
+            ft_subscriber_transactions t
+            ON c.customer_number = t.customer_number
+        WHERE 
+            t.record_status IS NULL
+        GROUP BY 
+            c.customer_number, c.First_Name, c.Last_Name, c.primary_address
+        ORDER BY 
+            amount_paid DESC, gross_liability DESC
+        """
+        
+        FT_Table_1 = execute_sql_paginated(sql_query_1, target_rows=top_v, row_limit=1000)
+        
+        FT_Table_1.rename(columns={
+                    "first_name": "First Name",
+                    "last_name": "Last Name",
+                    "primary_address": "Primary Address",
+                    "amount_paid": "Amount Paid",
+                    "gross_liability": "Gross Liability"
+                }, inplace=True)
+        
+        FT_Table_1.index = FT_Table_1.index + 1
+
+        FT_Table = FT_Table_1
+
+        #FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
+
+        #FT_Table = FT_Table.reset_index(drop=True)
+        #FT_Table.index = FT_Table.index + 1
+        FT_Table_OG = FT_Table
+        #FT_Table_1 = FT_Table.nlargest(top_n, "Amount Paid")
+        #FT_Table_2 = FT_Table.nlargest(top_n_2, "Gross Liability")
+        #FT_Table = pd.concat([FT_Table_1, FT_Table_2])
+        #FT_Table = FT_Table.drop_duplicates()
+        #FT_Table = FT_Table.sort_values(by=['Amount Paid', 'Gross Liability'], ascending=[False, False])
+        FT_Table["Net Paid"] = FT_Table["Amount Paid"] - FT_Table["Gross Liability"]
+        st.subheader("Overall Table Based On Your Limiting Criteria")
+        st.dataframe(FT_Table, use_container_width=True)
+
+        # Create subplots layout: 1 row, 3 columns
+        fig = make_subplots(rows=1, cols=3, subplot_titles=(
+            "Distribution of Amount Paid",
+            "Distribution of Gross Liability",
+            "Distribution of Net Paid (Amount Paid - Gross Liability)"
+        ))
+        
+        # Histogram 1: Amount Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Amount Paid"],
+                name="Amount Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=1
+        )
+        
+        # Histogram 2: Gross Liability
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Gross Liability"],
+                name="Gross Liability",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=2
+        )
+        
+        # Histogram 3: Net Paid
+        fig.add_trace(
+            go.Histogram(
+                x=FT_Table["Net Paid"],
+                name="Net Paid",
+                xbins=dict(start=0)  # Start bins at 0
+            ),
+            row=1, col=3
+        )
+
+        
+        # Layout tweaks for aesthetics
+        fig.update_layout(
+            title_text="",
+            height=400,
+            width=1200,
+            showlegend=False,
+            template="plotly_white"
+        )
+        
+        # Update axes labels
+        fig.update_xaxes(title_text="Amount Paid", row=1, col=1)
+        fig.update_xaxes(title_text="Gross Liability", row=1, col=2)
+        fig.update_xaxes(title_text="Net Paid", row=1, col=3)
+        
+        fig.update_yaxes(title_text="Frequency", row=1, col=1)
+        fig.update_yaxes(title_text="Frequency", row=1, col=2)
+        fig.update_yaxes(title_text="Frequency", row=1, col=3)
+        
+        # Show the interactive plot
+        st.subheader("Distribution of Information In Above Selection")
+        st.plotly_chart(fig, use_container_width=True)
+    
     st.subheader("Search By Name")
     # --- Customer Search Filtering ---
     first_name_filter = st.text_input("Filter by First Name", "")
