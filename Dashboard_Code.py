@@ -1018,7 +1018,7 @@ if st.session_state.authenticated:
         format="%d"   # This ensures the input is formatted as an integer
     )
     
-    if customer_number:
+    if customer_number != 1:
 
         #st.write(get_transactions(customer_number))
         customer_transaction_df = get_transactions(customer_number)
@@ -1030,6 +1030,10 @@ if st.session_state.authenticated:
             customer_transaction_df.index = customer_transaction_df.index + 1
             st.subheader("Filtered Customer Transaction Data Based on Your Search")
             st.dataframe(customer_transaction_df, use_container_width=True)
+
+    else:
+
+        st.write("No Values To Display")
 
     
     logout_button = st.button("Logout")
