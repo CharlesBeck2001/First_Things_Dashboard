@@ -1026,6 +1026,8 @@ if st.session_state.authenticated:
 
         if customer_transaction_df is None:
             st.write("No results found for the given search criteria.")
+        elif customer_transaction_df.empty:
+            st.write("No results found for the given search criteria.")
         else:
             customer_transaction_df.index = customer_transaction_df.index + 1
             st.subheader("Filtered Customer Transaction Data Based on Your Search")
