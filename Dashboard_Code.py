@@ -1035,7 +1035,7 @@ if st.session_state.authenticated:
 
     else:
 
-        st.write("No Values To Display")
+        st.write("No results found for the given search criteria.")
 
     
     logout_button = st.button("Logout")
