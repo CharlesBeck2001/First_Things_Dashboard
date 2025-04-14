@@ -1490,7 +1490,7 @@ if st.session_state.authenticated:
             SELECT 
                 c.first_name,
                 c.last_name,
-                t.customer_number,
+                CAST(t.customer_number AS TEXT) AS customer_number,
                 t.transaction_date,
                 t.amount_paid,
                 t.gross_liability
