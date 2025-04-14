@@ -441,7 +441,7 @@ if st.session_state.authenticated:
                 f"""
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
                     <h3 style="font-size: 16px;">Average Lifetime in Days</h3>
-                    <h4 style="font-size: 24px;">{average_life_query:,}</h4>
+                    <h4 style="font-size: 24px;">{average_life_query}</h4>
                 </div>
                 """, unsafe_allow_html=True)
 
