@@ -1621,6 +1621,7 @@ if st.session_state.authenticated:
         # Example using SQLite, replace with your actual DB connection
         #conn = sqlite3.connect("your_database.db")  # or your actual connection
         df = execute_transaction_query_paginated(query, 10000, 1000)
+        df.index = df.index+1
         #conn.close()
 
         st.dataframe(df)
