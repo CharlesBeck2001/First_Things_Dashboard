@@ -1492,8 +1492,8 @@ if st.session_state.authenticated:
                 c.last_name,
                 CAST(t.customer_number AS TEXT) AS customer_number,
                 t.transaction_date,
-                t.amount_paid,
-                t.gross_liability
+                CAST(t.amount_paid AS NUMERIC) AS amount_paid,
+                CAST(t.gross_liability AS NUMERIC) AS gross_liability
             FROM 
                 ft_subscriber_transactions t
             JOIN 
