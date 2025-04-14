@@ -1519,6 +1519,29 @@ if st.session_state.authenticated:
         else:
             return base_query  # no date filter
 
+    def execute_transaction_query(query):
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+            "Range": "0-99999"
+        }
+    
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_transaction_query"
+        payload = {"query": query}
+    
+        response = requests.post(rpc_endpoint, headers=headers, json=payload)
+    
+        if response.status_code == 200:
+            data = response.json()
+            df = pd.DataFrame(data)
+            print("Query executed successfully, returning DataFrame.")
+            return df
+        else:
+            print("Error executing query:", response.status_code, response.text)
+            return pd.DataFrame()  # Return empty DataFrame if there's an error
+
+
 
     st.title("Subscriber Transactions Viewer")
 
@@ -1535,9 +1558,9 @@ if st.session_state.authenticated:
         st.code(query)  # Show the actual SQL for debugging
 
         # Example using SQLite, replace with your actual DB connection
-        conn = sqlite3.connect("your_database.db")  # or your actual connection
-        df = pd.read_sql_query(query, conn)
-        conn.close()
+        #conn = sqlite3.connect("your_database.db")  # or your actual connection
+        df = execute_transaction_query(query)
+        #conn.close()
 
         st.dataframe(df)
 
