@@ -1534,6 +1534,7 @@ if st.session_state.authenticated:
     
         if response.status_code == 200:
             data = response.json()
+            st.write(data)
             df = pd.DataFrame(data)
             print("Query executed successfully, returning DataFrame.")
             return df
