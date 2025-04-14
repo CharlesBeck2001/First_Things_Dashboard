@@ -1604,7 +1604,7 @@ if st.session_state.authenticated:
         return df
 
 
-    st.title("Subscriber Transactions Viewer")
+    st.subheader("Subscriber Transactions Viewer")
 
     # User date input
     date_input_1 = st.text_input("Start Date (mm/dd/yyyy)", "")
@@ -1663,7 +1663,7 @@ if st.session_state.authenticated:
     
     
     # UI section for filtering by record_change_timestamp
-    st.title("Record Change Timestamp Viewer")
+    st.subheader("Record Change Timestamp Viewer")
     
     ts_input_1 = st.text_input("Start Timestamp (YYYYMMDDHHMMSS)", key="ts_start")
     ts_input_2 = st.text_input("End Timestamp (YYYYMMDDHHMMSS)", key="ts_end")
