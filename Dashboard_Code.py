@@ -1531,7 +1531,7 @@ if st.session_state.authenticated:
         payload = {"query": query}
     
         response = requests.post(rpc_endpoint, headers=headers, json=payload)
-        st.write(response.text)
+        
         if response.status_code == 200:
             data = response.json()
             #st.write(data)
