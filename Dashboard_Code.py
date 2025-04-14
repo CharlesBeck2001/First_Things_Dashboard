@@ -1616,7 +1616,7 @@ if st.session_state.authenticated:
 
     if st.button("Run Query"):
         query = build_query(formatted_date_1, formatted_date_2)
-        st.code(query)  # Show the actual SQL for debugging
+        #st.code(query)  # Show the actual SQL for debugging
 
         # Example using SQLite, replace with your actual DB connection
         #conn = sqlite3.connect("your_database.db")  # or your actual connection
