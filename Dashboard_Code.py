@@ -1474,6 +1474,72 @@ if st.session_state.authenticated:
 
         st.write("No results found for the given search criteria.")
 
+
+    
+    def format_date(input_date):
+        """Convert from m/d/yyyy or mm/dd/yyyy to yyyy-mm-dd"""
+        try:
+            return datetime.strptime(input_date.strip(), "%m/%d/%Y").strftime("%Y-%m-%d")
+        except ValueError:
+            st.warning(f"Invalid date format: {input_date}")
+            return None
+
+    def build_query(date_1=None, date_2=None):
+        base_query = """
+            SELECT 
+                c.first_name,
+                c.last_name,
+                t.customer_number,
+                t.transaction_date,
+                t.amount_paid,
+                t.gross_liability
+            FROM 
+                ft_subscriber_transactions t
+            JOIN 
+                ft_customers c
+                ON t.customer_number = c.customer_number
+        """
+    
+        if date_1 and date_2:
+            return base_query + f"""
+            WHERE 
+                CAST(t.transaction_date AS DATE) BETWEEN '{date_1}' AND '{date_2}'
+            """
+        elif date_1:
+            return base_query + f"""
+            WHERE 
+                CAST(t.transaction_date AS DATE) >= '{date_1}'
+            """
+        elif date_2:
+            return base_query + f"""
+            WHERE 
+                CAST(t.transaction_date AS DATE) <= '{date_2}'
+            """
+        else:
+            return base_query  # no date filter
+
+
+    st.title("Subscriber Transactions Viewer")
+
+    # User date input
+    date_input_1 = st.text_input("Start Date (mm/dd/yyyy)", "")
+    date_input_2 = st.text_input("End Date (mm/dd/yyyy)", "")
+
+    # Format dates
+    formatted_date_1 = format_date(date_input_1) if date_input_1 else None
+    formatted_date_2 = format_date(date_input_2) if date_input_2 else None
+
+    if st.button("Run Query"):
+        query = build_query(formatted_date_1, formatted_date_2)
+        st.code(query)  # Show the actual SQL for debugging
+
+        # Example using SQLite, replace with your actual DB connection
+        conn = sqlite3.connect("your_database.db")  # or your actual connection
+        df = pd.read_sql_query(query, conn)
+        conn.close()
+
+        st.dataframe(df)
+
     
     logout_button = st.button("Logout")
     if logout_button:
