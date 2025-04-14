@@ -378,6 +378,25 @@ if st.session_state.authenticated:
         ft_subscriber_transactions t
         ON c.customer_number = t.customer_number
     """
+
+    average_life_query = """
+    SELECT 
+        AVG(customer_lifetime_days) AS avg_lifetime_days
+    FROM (
+        SELECT 
+            t.customer_number,
+            SUM(
+                (TO_DATE(t.status_change_date, 'MM/DD/YYYY') - TO_DATE(t.transaction_date, 'MM/DD/YYYY'))::INTEGER
+            ) AS customer_lifetime_days
+        FROM 
+            ft_subscriber_transactions t
+        WHERE 
+            t.transaction_date IS NOT NULL
+            AND t.status_change_date IS NOT NULL
+        GROUP BY 
+            t.customer_number
+    ) AS customer_lifetimes
+    """
     
     # Define the SQL query to run
     
@@ -386,12 +405,13 @@ if st.session_state.authenticated:
     st.subheader("First Things Stats")
 
     # Create columns for the stat boxes
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     
     # Calculate the totals
     total_customers = int(execute_sql_count(count_query)['count'][0])
     total_amount_paid = float(execute_sql_amount(amount_query)['amount'][0])
     total_gross_liability = float(execute_sql_amount(liability_query)['amount'][0])
+    average_lifetime = float(execute_sql_amount(average_life_query['amount'][0]))
     
     # Add stat boxes in columns
     with col1:
@@ -416,6 +436,16 @@ if st.session_state.authenticated:
                 """, unsafe_allow_html=True)
     
     with col3:
+        with st.container():
+            st.markdown(
+                f"""
+                <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
+                    <h3 style="font-size: 16px;">Average Lifetime in Days</h3>
+                    <h4 style="font-size: 24px;">{average_life_query:,}</h4>
+                </div>
+                """, unsafe_allow_html=True)
+
+    with col4:
         with st.container():
             st.markdown(
                 f"""
