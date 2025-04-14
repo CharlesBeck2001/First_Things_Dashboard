@@ -1627,7 +1627,7 @@ if st.session_state.authenticated:
         st.dataframe(df)
 
 
-    def build_change_timestamp_query(date_1=None, date_2=None):
+    def build_change_timestamp_query(raw_ts_1=None, raw_ts_2=None):
         base_query = """
             SELECT 
                 c.first_name,
@@ -1643,20 +1643,20 @@ if st.session_state.authenticated:
                 ON t.customer_number = c.customer_number
         """
     
-        if date_1 and date_2:
+        if raw_ts_1 and raw_ts_2:
             return base_query + f"""
             WHERE 
-                CAST(t.record_change_timestamp AS TIMESTAMP) BETWEEN '{date_1}' AND '{date_2}'
+                t.record_change_timestamp BETWEEN '{raw_ts_1}' AND '{raw_ts_2}'
             """
-        elif date_1:
+        elif raw_ts_1:
             return base_query + f"""
             WHERE 
-                CAST(t.record_change_timestamp AS TIMESTAMP) >= '{date_1}'
+                t.record_change_timestamp >= '{raw_ts_1}'
             """
-        elif date_2:
+        elif raw_ts_2:
             return base_query + f"""
             WHERE 
-                CAST(t.record_change_timestamp AS TIMESTAMP) <= '{date_2}'
+                t.record_change_timestamp <= '{raw_ts_2}'
             """
         else:
             return base_query
@@ -1665,14 +1665,15 @@ if st.session_state.authenticated:
     # UI section for filtering by record_change_timestamp
     st.title("Record Change Timestamp Viewer")
     
-    timestamp_input_1 = st.text_input("Start Timestamp (mm/dd/yyyy)", key="ts_start")
-    timestamp_input_2 = st.text_input("End Timestamp (mm/dd/yyyy)", key="ts_end")
+    ts_input_1 = st.text_input("Start Timestamp (YYYYMMDDHHMMSS)", key="ts_start")
+    ts_input_2 = st.text_input("End Timestamp (YYYYMMDDHHMMSS)", key="ts_end")
     
-    formatted_ts_1 = format_date(timestamp_input_1) if timestamp_input_1 else None
-    formatted_ts_2 = format_date(timestamp_input_2) if timestamp_input_2 else None
+    #formatted_ts_1 = format_date(timestamp_input_1) if timestamp_input_1 else None
+    #formatted_ts_2 = format_date(timestamp_input_2) if timestamp_input_2 else None
     
-    if timestamp_input_1 or timestamp_input_2:
-        ts_query = build_change_timestamp_query(formatted_ts_1, formatted_ts_2)
+    
+    if ts_input_1 or ts_input_2:
+        ts_query = build_change_timestamp_query(ts_input_1, ts_input_2)
         df_ts = execute_transaction_query_paginated(ts_query, 10000, 1000)
         df_ts.index = df_ts.index + 1
         st.dataframe(df_ts)
