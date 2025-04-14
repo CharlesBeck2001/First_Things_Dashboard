@@ -411,7 +411,7 @@ if st.session_state.authenticated:
     total_customers = int(execute_sql_count(count_query)['count'][0])
     total_amount_paid = float(execute_sql_amount(amount_query)['amount'][0])
     total_gross_liability = float(execute_sql_amount(liability_query)['amount'][0])
-    average_lifetime = float(execute_sql_amount(average_life_query['amount'][0]))
+    average_lifetime = float(execute_sql_amount(average_life_query)['amount'][0])
     
     # Add stat boxes in columns
     with col1:
