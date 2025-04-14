@@ -1614,7 +1614,7 @@ if st.session_state.authenticated:
     formatted_date_1 = format_date(date_input_1) if date_input_1 else None
     formatted_date_2 = format_date(date_input_2) if date_input_2 else None
 
-    if st.button("Run Query"):
+    if date_input_1 or date_input_2:
         query = build_query(formatted_date_1, formatted_date_2)
         #st.code(query)  # Show the actual SQL for debugging
 
