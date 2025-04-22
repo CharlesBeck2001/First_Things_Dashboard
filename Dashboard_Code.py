@@ -1880,7 +1880,7 @@ if st.session_state.authenticated:
     ),
     average_by_day AS (
         SELECT 
-            sample_day,
+            sample_day::DATE AS sample_day,
             ROUND(AVG(lifetime_days), 2) AS avg_lifetime_days
         FROM daily_lifetimes
         GROUP BY sample_day
