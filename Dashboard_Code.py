@@ -1800,7 +1800,7 @@ if st.session_state.authenticated:
             "Range": "0-99999"
         }
     
-        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_date_request"
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_date_request_2"
         payload = {"query": query}
     
         response = requests.post(rpc_endpoint, headers=headers, json=payload)
