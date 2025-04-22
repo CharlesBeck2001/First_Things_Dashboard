@@ -1768,6 +1768,105 @@ if st.session_state.authenticated:
         df_ts.index = df_ts.index + 1
         st.dataframe(df_ts)
 
+
+    lifetime_query = """
+    WITH parsed_dates AS (
+        SELECT 
+            customer_number,
+            TO_DATE(transaction_date, 'MM/DD/YY') AS start_date,
+            LEAST(
+                COALESCE(TO_DATE(status_change_date, 'MM/DD/YY'), CURRENT_DATE),
+                CURRENT_DATE
+            ) AS end_date
+        FROM ft_subscriber_transactions
+        WHERE transaction_date IS NOT NULL 
+          AND status_change_date IS NOT NULL
+    ),
+    date_bounds AS (
+        SELECT 
+            MIN(start_date) AS min_date,
+            CURRENT_DATE AS max_date
+        FROM parsed_dates
+    ),
+    sample_days AS (
+        SELECT 
+            min_date + ((i * (max_date - min_date)) / 50)::INT AS day
+        FROM date_bounds, generate_series(0, 50) AS s(i)
+    ),
+    intervals_by_day AS (
+        SELECT 
+            s.day AS sample_day,
+            p.customer_number,
+            p.start_date,
+            LEAST(p.end_date, s.day) AS effective_end
+        FROM sample_days s
+        JOIN parsed_dates p 
+          ON p.start_date < s.day
+    ),
+    ordered_intervals AS (
+        SELECT 
+            sample_day,
+            customer_number,
+            start_date,
+            effective_end
+        FROM intervals_by_day
+        ORDER BY sample_day, customer_number, start_date
+    ),
+    numbered_intervals AS (
+        SELECT 
+            sample_day,
+            customer_number,
+            start_date,
+            effective_end,
+            LAG(effective_end) OVER (PARTITION BY sample_day, customer_number ORDER BY start_date) AS prev_end
+        FROM ordered_intervals
+    ),
+    grouped_intervals AS (
+        SELECT 
+            sample_day,
+            customer_number,
+            start_date,
+            effective_end,
+            SUM(CASE 
+                    WHEN prev_end IS NULL OR start_date > prev_end THEN 1
+                    ELSE 0
+                END) OVER (PARTITION BY sample_day, customer_number ORDER BY start_date) AS group_id
+        FROM numbered_intervals
+    ),
+    merged_intervals AS (
+        SELECT 
+            sample_day,
+            customer_number,
+            MIN(start_date) AS merged_start,
+            MAX(effective_end) AS merged_end
+        FROM grouped_intervals
+        GROUP BY sample_day, customer_number, group_id
+    ),
+    valid_intervals AS (
+        SELECT *
+        FROM merged_intervals
+        WHERE merged_end >= merged_start
+    ),
+    daily_lifetimes AS (
+        SELECT 
+            sample_day,
+            customer_number,
+            SUM(merged_end - merged_start) AS lifetime_days
+        FROM valid_intervals
+        GROUP BY sample_day, customer_number
+    ),
+    average_by_day AS (
+        SELECT 
+            sample_day,
+            ROUND(AVG(lifetime_days), 2) AS avg_lifetime_days
+        FROM daily_lifetimes
+        GROUP BY sample_day
+        ORDER BY sample_day
+    )
+    SELECT * 
+    FROM average_by_day;
+    """
+
     
     logout_button = st.button("Logout")
     if logout_button:
