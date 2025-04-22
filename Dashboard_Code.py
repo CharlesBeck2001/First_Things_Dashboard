@@ -1769,6 +1769,29 @@ if st.session_state.authenticated:
         st.dataframe(df_ts)
 
 
+    def execute_dated_query(query):
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+            "Range": "0-99999"
+        }
+    
+        rpc_endpoint = f"{supabase_url}/rest/v1/rpc/execute_dated_query"
+        payload = {"query": query}
+    
+        response = requests.post(rpc_endpoint, headers=headers, json=payload)
+        
+        if response.status_code == 200:
+            data = response.json()
+            #st.write(data)
+            df = pd.DataFrame(data)
+            print("Query executed successfully, returning DataFrame.")
+            return df
+        else:
+            print("Error executing query:", response.status_code, response.text)
+            return pd.DataFrame()  # Return empty DataFrame if there's an error
+
     lifetime_query = """
     WITH parsed_dates AS (
         SELECT 
@@ -1867,6 +1890,7 @@ if st.session_state.authenticated:
     FROM average_by_day;
     """
 
+    st.write(execute_dated_query(lifetime_query))
     
     logout_button = st.button("Logout")
     if logout_button:
