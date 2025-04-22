@@ -1915,6 +1915,8 @@ if st.session_state.authenticated:
     FROM average_by_day
     """
 
+    cutoff_date = '1989-12-01'
+    
     lifetime_query_2 = f"""
     WITH intervals AS (
         SELECT 
