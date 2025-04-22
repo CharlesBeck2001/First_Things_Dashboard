@@ -379,7 +379,7 @@ if st.session_state.authenticated:
         ON c.customer_number = t.customer_number
     """
 
-    average_life_query = """
+    average_life_query_old = """
     SELECT 
         AVG(customer_lifetime_days) AS avg_lifetime_days
     FROM (
@@ -396,6 +396,66 @@ if st.session_state.authenticated:
         GROUP BY 
             t.customer_number
     ) AS customer_lifetimes
+    """
+
+    average_life_query = """
+    WITH intervals AS (
+    SELECT 
+        customer_number,
+        TO_DATE(transaction_date, 'MM/DD/YYYY') AS start_date,
+        LEAST(
+            COALESCE(TO_DATE(status_change_date, 'MM/DD/YYYY'), CURRENT_DATE),
+            CURRENT_DATE
+        ) AS end_date
+    FROM ft_subscriber_transactions
+    WHERE transaction_date IS NOT NULL
+      AND status_change_date IS NOT NULL
+    ),
+    ordered_intervals AS (
+        SELECT 
+            customer_number,
+            start_date,
+            end_date
+        FROM intervals
+        ORDER BY customer_number, start_date
+    ),
+    numbered_intervals AS (
+        SELECT 
+            customer_number,
+            start_date,
+            end_date,
+            LAG(end_date) OVER (PARTITION BY customer_number ORDER BY start_date) AS prev_end_date
+        FROM ordered_intervals
+    ),
+    grouped_intervals AS (
+        SELECT 
+            customer_number,
+            start_date,
+            end_date,
+            SUM(CASE 
+                    WHEN prev_end_date IS NULL OR start_date > prev_end_date THEN 1
+                    ELSE 0
+                END) OVER (PARTITION BY customer_number ORDER BY start_date) AS group_id
+        FROM numbered_intervals
+    ),
+    merged_intervals AS (
+        SELECT 
+            customer_number,
+            MIN(start_date) AS merged_start,
+            MAX(end_date) AS merged_end
+        FROM grouped_intervals
+        GROUP BY customer_number, group_id
+    ),
+    customer_lifetimes AS (
+        SELECT 
+            customer_number,
+            SUM(merged_end - merged_start) AS lifetime_days
+        FROM merged_intervals
+        GROUP BY customer_number
+    )
+    SELECT 
+        AVG(lifetime_days) AS avg_lifetime_days
+    FROM customer_lifetimes;
     """
     
     # Define the SQL query to run
