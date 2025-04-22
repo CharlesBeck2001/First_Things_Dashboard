@@ -1982,7 +1982,6 @@ if st.session_state.authenticated:
         GROUP BY customer_number
     )
     SELECT 
-        DATE '{cutoff_date}' AS evaluation_date,
         ROUND(AVG(lifetime_days), 2) AS avg_lifetime_days
     FROM customer_lifetimes
     """
