@@ -1996,7 +1996,7 @@ if st.session_state.authenticated:
 
     st.write(execute_date_request(old_date_query)['result'][0])
 
-    st.write(execute_sql_amount(lifetime_query_2)['result'][0])
+    st.write(execute_sql_amount(lifetime_query_2))
     
     
     logout_button = st.button("Logout")
