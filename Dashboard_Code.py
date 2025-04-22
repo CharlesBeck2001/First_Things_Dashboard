@@ -1813,8 +1813,8 @@ if st.session_state.authenticated:
     ),
     sample_days AS (
         SELECT 
-            min_date + ((i * (max_date - min_date)) / 50)::INT AS day
-        FROM date_bounds, generate_series(0, 50) AS s(i)
+            min_date + ((i * (max_date - min_date)) / 20)::INT AS day
+        FROM date_bounds, generate_series(0, 20) AS s(i)
     ),
     intervals_by_day AS (
         SELECT 
