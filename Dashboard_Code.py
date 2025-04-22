@@ -1789,7 +1789,7 @@ if st.session_state.authenticated:
             print("Query executed successfully, returning DataFrame.")
             return df
         else:
-            print("Error executing query:", response.status_code, response.text)
+            st.write("Error executing query:", response.status_code, response.text)
             return pd.DataFrame()  # Return empty DataFrame if there's an error
 
     lifetime_query = """
