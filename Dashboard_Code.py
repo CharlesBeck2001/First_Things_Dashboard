@@ -1887,7 +1887,7 @@ if st.session_state.authenticated:
         ORDER BY sample_day
     )
     SELECT * 
-    FROM average_by_day;
+    FROM average_by_day
     """
 
     st.write(execute_dated_query(lifetime_query))
