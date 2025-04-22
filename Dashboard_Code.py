@@ -1915,7 +1915,7 @@ if st.session_state.authenticated:
     FROM average_by_day
     """
 
-    cutoff_date = '1989-12-01'
+    cutoff_date = '2005-12-01'
     
     lifetime_query_2 = f"""
     WITH intervals AS (
@@ -1995,7 +1995,10 @@ if st.session_state.authenticated:
         AND transaction_date ~ '^[0-1][0-9]/[0-3][0-9]/[0-9]{2}$'
     """
 
-    st.write(execute_date_request(old_date_query))
+    st.write(execute_date_request(old_date_query[0]))
+
+    st.write(execute_sql_amount(lifetime_query_2))
+    
     
     logout_button = st.button("Logout")
     if logout_button:
