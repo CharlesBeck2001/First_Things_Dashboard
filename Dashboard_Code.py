@@ -2166,7 +2166,7 @@ if st.session_state.authenticated:
     
     # Step 4: Create a DataFrame
     df = pd.DataFrame({
-        'Cutoff Date': formatted_dates,
+        'Cutoff Date': pd.to_datetime(formatted_dates),  # Convert to datetime format
         'Average Lifetime (days)': avg_lifetimes
     })
     
