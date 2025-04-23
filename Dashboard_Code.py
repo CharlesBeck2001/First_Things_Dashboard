@@ -1997,6 +1997,108 @@ if st.session_state.authenticated:
     st.write(execute_date_request(old_date_query)['result'][0])
 
     st.write(execute_sql_amount(lifetime_query_2)['amount'][0])
+
+
+    old_date_query = """
+    SELECT MIN(TO_DATE(transaction_date, 'MM/DD/YY')) AS min_date
+    FROM ft_subscriber_transactions
+    WHERE 
+        transaction_date IS NOT NULL
+        AND transaction_date ~ '^[0-1][0-9]/[0-3][0-9]/[0-9]{2}$'
+    """
+    min_date_str = execute_date_request(old_date_query)['result'][0]
+    min_date = datetime.strptime(min_date_str, '%m/%d/%y')
+    today = datetime.today()
+    
+    # Step 2: Generate 100 evenly spaced dates
+    dates = [min_date + (today - min_date) * i / 99 for i in range(100)]
+    formatted_dates = [d.strftime('%Y-%m-%d') for d in dates]
+    
+    # Step 3: Run lifetime query for each cutoff date
+    avg_lifetimes = []
+    progress = st.progress(0)
+    for i, cutoff_date in enumerate(formatted_dates):
+        lifetime_query = f"""
+        WITH intervals AS (
+            SELECT 
+                customer_number,
+                TO_DATE(transaction_date, 'MM/DD/YYYY') AS start_date,
+                LEAST(
+                    COALESCE(TO_DATE(status_change_date, 'MM/DD/YYYY'), CURRENT_DATE),
+                    CURRENT_DATE
+                ) AS end_date
+            FROM ft_subscriber_transactions
+            WHERE transaction_date IS NOT NULL
+              AND status_change_date IS NOT NULL
+        ),
+        filtered_intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                LEAST(end_date, DATE '{cutoff_date}') AS end_date
+            FROM intervals
+            WHERE start_date < DATE '{cutoff_date}'
+        ),
+        ordered_intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                end_date
+            FROM filtered_intervals
+            ORDER BY customer_number, start_date
+        ),
+        numbered_intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                end_date,
+                LAG(end_date) OVER (PARTITION BY customer_number ORDER BY start_date) AS prev_end_date
+            FROM ordered_intervals
+        ),
+        grouped_intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                end_date,
+                SUM(CASE 
+                        WHEN prev_end_date IS NULL OR start_date > prev_end_date THEN 1
+                        ELSE 0
+                    END) OVER (PARTITION BY customer_number ORDER BY start_date) AS group_id
+            FROM numbered_intervals
+        ),
+        merged_intervals AS (
+            SELECT 
+                customer_number,
+                MIN(start_date) AS merged_start,
+                MAX(end_date) AS merged_end
+            FROM grouped_intervals
+            GROUP BY customer_number, group_id
+        ),
+        customer_lifetimes AS (
+            SELECT 
+                customer_number,
+                SUM(merged_end - merged_start) AS lifetime_days
+            FROM merged_intervals
+            WHERE merged_end >= merged_start
+            GROUP BY customer_number
+        )
+        SELECT 
+            ROUND(AVG(lifetime_days), 2) AS avg_lifetime_days
+        FROM customer_lifetimes
+        """
+        
+        result = execute_sql_amount(lifetime_query)['amount'][0]
+        avg_lifetimes.append(result)
+        progress.progress((i + 1) / 100)
+    
+    # Step 4: Create a DataFrame
+    df = pd.DataFrame({
+        'Cutoff Date': formatted_dates,
+        'Average Lifetime (days)': avg_lifetimes
+    })
+    
+    # Step 5: Plot in Streamlit
+    st.line_chart(df.set_index('Cutoff Date'))
     
     
     logout_button = st.button("Logout")
