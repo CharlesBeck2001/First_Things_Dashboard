@@ -2016,6 +2016,7 @@ if st.session_state.authenticated:
     
     # Step 3: Run lifetime query for each cutoff date
     avg_lifetimes = []
+    avg_amount = []
     progress = st.progress(0)
     for i, cutoff_date in enumerate(formatted_dates):
         lifetime_query_old = f"""
@@ -2159,9 +2160,44 @@ if st.session_state.authenticated:
             ROUND(AVG(lifetime_days), 2) AS avg_lifetime_days
         FROM customer_lifetimes
         """
+
+        average_amount_paid = f"""
+        WITH date_filtered_transactions AS (
+            SELECT 
+                customer_number,
+                TO_DATE(transaction_date, 'MM/DD/YY') AS start_date,
+                LEAST(COALESCE(TO_DATE(status_change_date, 'MM/DD/YY'), CURRENT_DATE), CURRENT_DATE) AS end_date,
+                CAST(amount_paid AS NUMERIC) AS amount_paid
+            FROM ft_subscriber_transactions
+            WHERE TO_DATE(transaction_date, 'MM/DD/YY') < DATE '{cutoff_date}'
+        ),
+        adjusted_amounts AS (
+            SELECT 
+                customer_number,
+                CASE
+                    WHEN start_date <= DATE '{cutoff_date}' AND end_date >= DATE '{cutoff_date}' THEN 
+                        (DATE '{cutoff_date}' - start_date)::NUMERIC / (end_date - start_date)::NUMERIC * amount_paid
+                    ELSE
+                        amount_paid
+                END AS adjusted_amount_paid
+            FROM date_filtered_transactions
+        ),
+        total_per_customer AS (
+            SELECT 
+                customer_number,
+                SUM(adjusted_amount_paid) AS total_adjusted_amount_paid
+            FROM adjusted_amounts
+            GROUP BY customer_number
+        )
+        SELECT 
+            ROUND(AVG(total_adjusted_amount_paid), 2) AS avg_adjusted_amount_paid
+        FROM total_per_customer
+        """
         
         result = execute_sql_amount(lifetime_query)['amount'][0]
+        result_2 = execute_sql_amount(average_amount_paid)['amount'][0]
         avg_lifetimes.append(result)
+        avg_amount.append(result_2)
         progress.progress((i + 1) / 100)
     
     # Step 4: Create a DataFrame
@@ -2169,13 +2205,19 @@ if st.session_state.authenticated:
         'Cutoff Date': pd.to_datetime(formatted_dates),  # Convert to datetime format
         'Average Lifetime (days)': avg_lifetimes
     })
-    
+
+    df_2 = pd.DataFrame({
+        'Cutoff Date': pd.to_datetime(formatted_dates),  # Convert to datetime format
+        'Average Amount': avg_amount
+    })
     # Step 5: Plot in Streamlit
 
     st.subheader("Average Customer Lifetime For Dates Prior to the Given Date")
     st.line_chart(df.set_index('Cutoff Date'))
 
-
+    
+    st.subheader("Average Customer Amount For Dates Prior to the Given Date")
+    st.line_chart(df_2.set_index('Cutoff Date'))
     
     
     logout_button = st.button("Logout")
