@@ -2018,7 +2018,7 @@ if st.session_state.authenticated:
     avg_lifetimes = []
     progress = st.progress(0)
     for i, cutoff_date in enumerate(formatted_dates):
-        lifetime_query = f"""
+        lifetime_query_old = f"""
         WITH intervals AS (
             SELECT 
                 customer_number,
@@ -2080,6 +2080,79 @@ if st.session_state.authenticated:
                 SUM(merged_end - merged_start) AS lifetime_days
             FROM merged_intervals
             WHERE merged_end >= merged_start
+            GROUP BY customer_number
+        )
+        SELECT 
+            ROUND(AVG(lifetime_days), 2) AS avg_lifetime_days
+        FROM customer_lifetimes
+        """
+
+        lifetime_query = f"""
+        WITH parsed_dates AS (
+            SELECT 
+                customer_number,
+                TO_DATE(transaction_date, 'MM/DD/YY') AS start_date,
+                LEAST(
+                    COALESCE(TO_DATE(status_change_date, 'MM/DD/YY'), CURRENT_DATE),
+                    CURRENT_DATE
+                ) AS end_date
+            FROM ft_subscriber_transactions
+            WHERE transaction_date IS NOT NULL 
+              AND status_change_date IS NOT NULL
+        ),
+        intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                LEAST(end_date, DATE '{cutoff_date}') AS effective_end
+            FROM parsed_dates
+            WHERE start_date < DATE '{cutoff_date}'
+        ),
+        ordered_intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                effective_end
+            FROM intervals
+            ORDER BY customer_number, start_date
+        ),
+        numbered_intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                effective_end,
+                LAG(effective_end) OVER (PARTITION BY customer_number ORDER BY start_date) AS prev_end
+            FROM ordered_intervals
+        ),
+        grouped_intervals AS (
+            SELECT 
+                customer_number,
+                start_date,
+                effective_end,
+                SUM(CASE 
+                        WHEN prev_end IS NULL OR start_date > prev_end THEN 1
+                        ELSE 0
+                    END) OVER (PARTITION BY customer_number ORDER BY start_date) AS group_id
+            FROM numbered_intervals
+        ),
+        merged_intervals AS (
+            SELECT 
+                customer_number,
+                MIN(start_date) AS merged_start,
+                MAX(effective_end) AS merged_end
+            FROM grouped_intervals
+            GROUP BY customer_number, group_id
+        ),
+        valid_intervals AS (
+            SELECT *
+            FROM merged_intervals
+            WHERE merged_end >= merged_start
+        ),
+        customer_lifetimes AS (
+            SELECT 
+                customer_number,
+                SUM(merged_end - merged_start) AS lifetime_days
+            FROM valid_intervals
             GROUP BY customer_number
         )
         SELECT 
