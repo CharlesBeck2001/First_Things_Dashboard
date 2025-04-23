@@ -2007,7 +2007,7 @@ if st.session_state.authenticated:
         AND transaction_date ~ '^[0-1][0-9]/[0-3][0-9]/[0-9]{2}$'
     """
     min_date_str = execute_date_request(old_date_query)['result'][0]
-    min_date = datetime.strptime(min_date_str, '%m/%d/%y')
+    min_date = datetime.strptime(min_date_str, '%Y-%m-%d')
     today = datetime.today()
     
     # Step 2: Generate 100 evenly spaced dates
