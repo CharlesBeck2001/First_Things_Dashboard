@@ -2171,7 +2171,11 @@ if st.session_state.authenticated:
     })
     
     # Step 5: Plot in Streamlit
+
+    st.subheader("Average Customer Lifetime For Dates Prior to the Given Date")
     st.line_chart(df.set_index('Cutoff Date'))
+
+
     
     
     logout_button = st.button("Logout")
