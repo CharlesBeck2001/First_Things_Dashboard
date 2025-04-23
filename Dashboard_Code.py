@@ -1994,9 +1994,9 @@ if st.session_state.authenticated:
         AND transaction_date ~ '^[0-1][0-9]/[0-3][0-9]/[0-9]{2}$'
     """
 
-    st.write(execute_date_request(old_date_query)['result'][0])
+    #st.write(execute_date_request(old_date_query)['result'][0])
 
-    st.write(execute_sql_amount(lifetime_query_2)['amount'][0])
+    #st.write(execute_sql_amount(lifetime_query_2)['amount'][0])
 
 
     old_date_query = """
