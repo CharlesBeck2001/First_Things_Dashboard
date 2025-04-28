@@ -520,7 +520,7 @@ if st.session_state.authenticated:
                 """, unsafe_allow_html=True)
 
     with col5:
-        with st.container()
+        with st.container():
             st.markdown(
                 f"""
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
@@ -530,7 +530,7 @@ if st.session_state.authenticated:
                 """, unsafe_allow_html=True)
 
     with col6:
-        with st.container()
+        with st.container():
             st.markdown(
                 f"""
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
