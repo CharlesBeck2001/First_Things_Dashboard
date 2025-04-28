@@ -356,16 +356,16 @@ if st.session_state.authenticated:
     SELECT 
         COUNT(*)
     FROM 
-        ft_customers c
+        sfg_customers c
     """
 
     amount_query = """
     SELECT 
         SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid
     FROM 
-        ft_customers c
+        sfg_customers c
     JOIN 
-        ft_subscriber_transactions t
+        sfg_subscriber_transactions t
         ON c.customer_number = t.customer_number
     """
 
@@ -373,9 +373,9 @@ if st.session_state.authenticated:
     SELECT 
         SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
     FROM 
-        ft_customers c
+        sfg_customers c
     JOIN 
-        ft_subscriber_transactions t
+        sfg_subscriber_transactions t
         ON c.customer_number = t.customer_number
     """
 
@@ -389,7 +389,7 @@ if st.session_state.authenticated:
                 (TO_DATE(t.status_change_date, 'MM/DD/YYYY') - TO_DATE(t.transaction_date, 'MM/DD/YYYY'))::INTEGER
             ) AS customer_lifetime_days
         FROM 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
         WHERE 
             t.transaction_date IS NOT NULL
             AND t.status_change_date IS NOT NULL
@@ -407,7 +407,7 @@ if st.session_state.authenticated:
             COALESCE(TO_DATE(status_change_date, 'MM/DD/YYYY'), CURRENT_DATE),
             CURRENT_DATE
         ) AS end_date
-    FROM ft_subscriber_transactions
+    FROM sfg_subscriber_transactions
     WHERE transaction_date IS NOT NULL
       AND status_change_date IS NOT NULL
     ),
@@ -536,9 +536,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         GROUP BY 
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
@@ -638,9 +638,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         GROUP BY 
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
@@ -745,9 +745,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         GROUP BY 
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
@@ -850,9 +850,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         GROUP BY 
             c.customer_number, c.First_Name, c.Last_Name, c.primary_address
@@ -966,9 +966,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         WHERE 
             t.record_status IS NULL
@@ -1070,9 +1070,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         WHERE 
             t.record_status IS NULL
@@ -1179,9 +1179,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         WHERE 
             t.record_status IS NULL
@@ -1286,9 +1286,9 @@ if st.session_state.authenticated:
             SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
             SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
         FROM 
-            ft_customers c
+            sfg_customers c
         JOIN 
-            ft_subscriber_transactions t
+            sfg_subscriber_transactions t
             ON c.customer_number = t.customer_number
         WHERE 
             t.record_status IS NULL
@@ -1413,9 +1413,9 @@ if st.session_state.authenticated:
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
             FROM 
-                ft_customers c
+                sfg_customers c
             JOIN 
-                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+                sfg_subscriber_transactions t ON c.customer_number = t.customer_number
             WHERE
                 c.First_Name = '{first_name_filter}' AND c.Last_Name = '{last_name_filter}'
             GROUP BY 
@@ -1436,9 +1436,9 @@ if st.session_state.authenticated:
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
             FROM 
-                ft_customers c
+                sfg_customers c
             JOIN 
-                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+                sfg_subscriber_transactions t ON c.customer_number = t.customer_number
             WHERE
                 c.First_Name = '{first_name_filter}'
             GROUP BY 
@@ -1459,9 +1459,9 @@ if st.session_state.authenticated:
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
             FROM 
-                ft_customers c
+                sfg_customers c
             JOIN 
-                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+                sfg_subscriber_transactions t ON c.customer_number = t.customer_number
             WHERE
                 c.Last_Name = '{last_name_filter}'
             GROUP BY 
@@ -1510,9 +1510,9 @@ if st.session_state.authenticated:
                 SUM(CAST(t.gross_value AS NUMERIC)) AS amount_paid,
                 SUM(CAST(t.gross_liability AS NUMERIC)) AS gross_liability
             FROM 
-                ft_customers c
+                sfg_customers c
             JOIN 
-                ft_subscriber_transactions t ON c.customer_number = t.customer_number
+                sfg_subscriber_transactions t ON c.customer_number = t.customer_number
             WHERE
                 c.primary_address = '{adress_filter}'
             GROUP BY 
@@ -1585,9 +1585,9 @@ if st.session_state.authenticated:
                 CAST(t.amount_paid AS NUMERIC) AS amount_paid,
                 CAST(t.gross_liability AS NUMERIC) AS gross_liability
             FROM 
-                ft_subscriber_transactions t
+                sfg_subscriber_transactions t
             JOIN 
-                ft_customers c
+                sfg_customers c
                 ON t.customer_number = c.customer_number
         """
     
@@ -1727,9 +1727,9 @@ if st.session_state.authenticated:
                 CAST(t.amount_paid AS NUMERIC) AS amount_paid,
                 CAST(t.gross_liability AS NUMERIC) AS gross_liability
             FROM 
-                ft_subscriber_transactions t
+                sfg_subscriber_transactions t
             JOIN 
-                ft_customers c
+                sfg_customers c
                 ON t.customer_number = c.customer_number
         """
     
@@ -1826,7 +1826,7 @@ if st.session_state.authenticated:
                 COALESCE(TO_DATE(status_change_date, 'MM/DD/YY'), CURRENT_DATE),
                 CURRENT_DATE
             ) AS end_date
-        FROM ft_subscriber_transactions
+        FROM sfg_subscriber_transactions
         WHERE transaction_date IS NOT NULL 
           AND status_change_date IS NOT NULL
     ),
@@ -1926,7 +1926,7 @@ if st.session_state.authenticated:
                 COALESCE(TO_DATE(status_change_date, 'MM/DD/YYYY'), CURRENT_DATE),
                 CURRENT_DATE
             ) AS end_date
-        FROM ft_subscriber_transactions
+        FROM sfg_subscriber_transactions
         WHERE transaction_date IS NOT NULL
           AND status_change_date IS NOT NULL
     ),
@@ -1988,7 +1988,7 @@ if st.session_state.authenticated:
 
     old_date_query = """
     SELECT MIN(TO_DATE(transaction_date, 'MM/DD/YY')) AS min_date
-    FROM ft_subscriber_transactions
+    FROM sfg_subscriber_transactions
     WHERE 
         transaction_date IS NOT NULL
         AND transaction_date ~ '^[0-1][0-9]/[0-3][0-9]/[0-9]{2}$'
@@ -2001,7 +2001,7 @@ if st.session_state.authenticated:
 
     old_date_query = """
     SELECT MIN(TO_DATE(transaction_date, 'MM/DD/YY')) AS min_date
-    FROM ft_subscriber_transactions
+    FROM sfg_subscriber_transactions
     WHERE 
         transaction_date IS NOT NULL
         AND transaction_date ~ '^[0-1][0-9]/[0-3][0-9]/[0-9]{2}$'
@@ -2028,7 +2028,7 @@ if st.session_state.authenticated:
                     COALESCE(TO_DATE(status_change_date, 'MM/DD/YYYY'), CURRENT_DATE),
                     CURRENT_DATE
                 ) AS end_date
-            FROM ft_subscriber_transactions
+            FROM sfg_subscriber_transactions
             WHERE transaction_date IS NOT NULL
               AND status_change_date IS NOT NULL
         ),
@@ -2097,7 +2097,7 @@ if st.session_state.authenticated:
                     COALESCE(TO_DATE(status_change_date, 'MM/DD/YY'), CURRENT_DATE),
                     CURRENT_DATE
                 ) AS end_date
-            FROM ft_subscriber_transactions
+            FROM sfg_subscriber_transactions
             WHERE transaction_date IS NOT NULL 
               AND status_change_date IS NOT NULL
         ),
@@ -2168,7 +2168,7 @@ if st.session_state.authenticated:
                 TO_DATE(transaction_date, 'MM/DD/YY') AS start_date,
                 LEAST(COALESCE(TO_DATE(status_change_date, 'MM/DD/YY'), CURRENT_DATE), CURRENT_DATE) AS end_date,
                 CAST(amount_paid AS NUMERIC) AS amount_paid
-            FROM ft_subscriber_transactions
+            FROM sfg_subscriber_transactions
             WHERE TO_DATE(transaction_date, 'MM/DD/YY') < DATE '{cutoff_date}'
         ),
         adjusted_amounts AS (
