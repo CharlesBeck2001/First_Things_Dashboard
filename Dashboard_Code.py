@@ -379,6 +379,8 @@ if st.session_state.authenticated:
         ON c.customer_number = t.customer_number
     """
 
+    
+
     average_life_query_old = """
     SELECT 
         AVG(customer_lifetime_days) AS avg_lifetime_days
@@ -465,13 +467,15 @@ if st.session_state.authenticated:
     st.subheader("First Things Stats")
 
     # Create columns for the stat boxes
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5, col6 = st.columns(6)
     
     # Calculate the totals
     total_customers = int(execute_sql_count(count_query)['count'][0])
     total_amount_paid = float(execute_sql_amount(amount_query)['amount'][0])
     total_gross_liability = float(execute_sql_amount(liability_query)['amount'][0])
     average_lifetime = float(execute_sql_amount(average_life_query)['amount'][0])
+    average_amount = total_amount_paid/total_customers
+    profit = total_amount_paid-total_gross_liability
     
     # Add stat boxes in columns
     with col1:
@@ -512,6 +516,26 @@ if st.session_state.authenticated:
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
                     <h3 style="font-size: 16px;">Total Gross Liability</h3>
                     <h4 style="font-size: 24px;">${total_gross_liability:,.2f}</h4>
+                </div>
+                """, unsafe_allow_html=True)
+
+    with col5:
+        with st.container()
+            st.markdown(
+                f"""
+                <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
+                    <h3 style="font-size: 16px;">Total Profit</h3>
+                    <h4 style="font-size: 24px;">${profit:,.2f}</h4>
+                </div>
+                """, unsafe_allow_html=True)
+
+    with col6:
+        with st.container()
+            st.markdown(
+                f"""
+                <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
+                    <h3 style="font-size: 16px;">Average Amount Per Customer</h3>
+                    <h4 style="font-size: 24px;">${average_amount:,.2f}</h4>
                 </div>
                 """, unsafe_allow_html=True)
 
