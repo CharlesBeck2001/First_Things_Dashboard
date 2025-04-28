@@ -534,7 +534,7 @@ if st.session_state.authenticated:
             st.markdown(
                 f"""
                 <div style="border: 2px solid white; padding: 20px; border-radius: 10px; background-color: black; color: white;">
-                    <h3 style="font-size: 16px;">Average Amount Per Customer</h3>
+                    <h3 style="font-size: 16px;">Average Per Customer</h3>
                     <h4 style="font-size: 24px;">${average_amount:,.2f}</h4>
                 </div>
                 """, unsafe_allow_html=True)
