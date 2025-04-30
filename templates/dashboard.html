@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <header>
+        <h1>First Things Dashboard</h1>
+        <nav>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </nav>
+    </header>
+
+    {% if error %}
+    <div class="error-message">{{ error }}</div>
+    {% else %}
+    <div class="stats-row">
+        <div class="stat-item">
+            <div class="stat-label">Total Customers</div>
+            <div class="stat-value">{{ "{:,}".format(total_customers) }}</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Total Amount</div>
+            <div class="stat-value">${{ "{:,.0f}".format(total_amount) }}</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Total Liability</div>
+            <div class="stat-value">${{ "{:,.0f}".format(total_liability) }}</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Net Profit</div>
+            <div class="stat-value">${{ "{:,.0f}".format(profit) }}</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-label">Avg. Per Customer</div>
+            <div class="stat-value">${{ "{:,.0f}".format(average_amount) }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="search-container">
+        <h2>Search Customers</h2>
+        <div class="search-form">
+            <input type="text" id="firstName" placeholder="First Name">
+            <input type="text" id="lastName" placeholder="Last Name">
+            <button onclick="searchCustomers()">Search</button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+
+    <div class="transactions-container">
+        <h2>Customer Transactions</h2>
+        <input type="number" id="customerNumber" placeholder="Enter Customer Number">
+        <button onclick="getTransactions()">View Transactions</button>
+        <div id="transactionResults" class="transaction-results"></div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
