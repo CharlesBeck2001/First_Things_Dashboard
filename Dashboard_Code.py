@@ -2245,6 +2245,13 @@ if st.session_state.authenticated:
             'Cutoff Date': pd.to_datetime(formatted_dates),  # Convert to datetime format
             'Average Amount': avg_amount
         })
+
+        # Merge the two DataFrames on 'Cutoff Date'
+        merged_df = pd.merge(df, df_2, on='Cutoff Date', how='inner')
+        
+        # Save the merged DataFrame to CSV
+        merged_df.to_csv(data_file, index=False)
+
     # Step 5: Plot in Streamlit
 
     st.subheader("Average Customer Lifetime For Dates Prior to the Given Date")
