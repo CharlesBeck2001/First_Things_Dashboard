@@ -2041,7 +2041,7 @@ if st.session_state.authenticated:
     # Step 3: Run lifetime query for each cutoff date
     avg_lifetimes = []
     avg_amount = []
-    progress = st.progress(0)
+    #progress = st.progress(0)
     for i, cutoff_date in enumerate(formatted_dates):
         lifetime_query_old = f"""
         WITH intervals AS (
@@ -2222,7 +2222,7 @@ if st.session_state.authenticated:
         result_2 = execute_sql_amount(average_amount_paid)['amount'][0]
         avg_lifetimes.append(result)
         avg_amount.append(result_2)
-        progress.progress((i + 1) / 100)
+        #progress.progress((i + 1) / 100)
     
     # Step 4: Create a DataFrame
     df = pd.DataFrame({
