@@ -2040,7 +2040,7 @@ if st.session_state.authenticated:
     
     # Step 3: Run lifetime query for each cutoff date
 
-    data_file = "customer_data_summary_new_2.csv"
+    data_file = "customer_data_summary_new_version.csv"
     #progress = st.progress(0)
 
     if os.path.exists(data_file):
