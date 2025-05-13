@@ -2269,7 +2269,7 @@ if st.session_state.authenticated:
             FROM customer_lifetimes
             """
     
-            average_amount_paid = f"""
+            average_amount_paid_old = f"""
             WITH date_filtered_transactions AS (
                 SELECT 
                     customer_number,
@@ -2301,7 +2301,40 @@ if st.session_state.authenticated:
                 ROUND(AVG(total_adjusted_amount_paid), 2) AS avg_adjusted_amount_paid
             FROM total_per_customer
             """
-            
+
+            average_amount_paid = f"""
+            WITH date_filtered_subscriptions AS (
+                SELECT 
+                    customer_id,
+                    current_term_start::DATE AS start_date,
+                    LEAST(COALESCE(current_term_end, CURRENT_DATE), CURRENT_DATE)::DATE AS end_date,
+                    CAST(price AS NUMERIC) AS price
+                FROM subscriptions
+                WHERE current_term_start < DATE '{cutoff_date}'
+            ),
+            adjusted_prices AS (
+                SELECT 
+                    customer_id,
+                    CASE
+                        WHEN start_date <= DATE '{cutoff_date}' AND end_date >= DATE '{cutoff_date}' THEN 
+                            ((DATE '{cutoff_date}' - start_date)::NUMERIC / (end_date - start_date)::NUMERIC) * price
+                        ELSE
+                            price
+                    END AS adjusted_price
+                FROM date_filtered_subscriptions
+            ),
+            total_per_customer AS (
+                SELECT 
+                    customer_id,
+                    SUM(adjusted_price) AS total_adjusted_price
+                FROM adjusted_prices
+                GROUP BY customer_id
+            )
+            SELECT 
+                ROUND(AVG(total_adjusted_price), 2) AS avg_adjusted_price
+            FROM total_per_customer
+            """
+                        
             result = execute_sql_amount(lifetime_query)['amount'][0]
             result_2 = execute_sql_amount(average_amount_paid)['amount'][0]
             avg_lifetimes.append(result)
