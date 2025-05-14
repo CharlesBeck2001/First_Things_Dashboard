@@ -2040,7 +2040,7 @@ if st.session_state.authenticated:
     
     # Step 3: Run lifetime query for each cutoff date
 
-    data_file = "customer_data_summary_new_version.csv"
+    data_file = "customer_data_summary_new_version_2.csv"
     #progress = st.progress(0)
 
     if os.path.exists(data_file):
@@ -2200,13 +2200,13 @@ if st.session_state.authenticated:
             WITH parsed_dates AS (
                 SELECT 
                     customer_id,
-                    current_term_start::date AS start_date,
+                    started_at::date AS start_date,
                     LEAST(
                         COALESCE(current_term_end::date, DATE '{cutoff_date}'),
                         DATE '{cutoff_date}'
                     ) AS end_date
                 FROM subscriptions
-                WHERE current_term_start IS NOT NULL 
+                WHERE started_at IS NOT NULL 
                   AND current_term_end IS NOT NULL
             ),
             intervals AS (
@@ -2269,7 +2269,7 @@ if st.session_state.authenticated:
             FROM customer_lifetimes
             """
     
-            average_amount_paid_old = f"""
+            average_amount_paid = f"""
             WITH date_filtered_transactions AS (
                 SELECT 
                     customer_number,
@@ -2302,7 +2302,7 @@ if st.session_state.authenticated:
             FROM total_per_customer
             """
 
-            average_amount_paid = f"""
+            average_amount_paid_new = f"""
             WITH date_filtered_subscriptions AS (
                 SELECT 
                     customer_id,
